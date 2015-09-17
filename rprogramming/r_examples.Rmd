@@ -1,0 +1,129 @@
+---
+title: "R Examples"
+output: html_document
+---
+
+## Drop Columns from a Data Frame
+
+Create example data frame:
+
+```{r}
+df <- data.frame( a = 1:10, b = 2:11, c = 3:12 )
+df
+```
+
+Select those you want to keep:
+
+```{r}
+df1 <- subset(df, select = c(a,c))
+df1
+```
+
+Remove those you don't want (notice the minus sign):
+
+```{r}
+df2 <- subset(df, select = -c(a,c))
+df2
+```
+
+## Ording Example
+
+```{r}
+dd <- data.frame(b = factor(c("Hi", "Med", "Hi", "Low"), 
+      levels = c("Low", "Med", "Hi"), ordered = TRUE),
+      x = c("A", "D", "A", "C"), y = c(8, 3, 9, 9),
+      z = c(1, 1, 1, 2))
+
+dd
+```
+
+```{r}
+dd[with(dd, order(-z, b)), ]
+```
+
+## Replace/Update Column Value Based on Another
+
+```{r}
+df <- data.frame(n = c(1:12),
+                 m = rep(c("?","+","h","k","m","b"),2))
+df
+```
+
+
+```{r}
+# convert t to character to make easier to compare
+df$m <- as.character(df$m)
+
+# set m as indicated by factor f
+df$n[which(df$m %in% c("?","+"))] <- df$n[which(df$m %in% c("?","+"))] * 1
+df$n[which(df$m == "h")] <- df$n[which(df$m == "h")] * 100
+df$n[which(df$m == "k")] <- df$n[which(df$m == "k")] * 1000
+df$n[which(df$m == "m")] <- df$n[which(df$m == "m")] * 1000000
+df$n[which(df$m == "b")] <- df$n[which(df$m == "b")] * 1000000000
+
+df
+```
+
+## IN and NOT IN
+
+The example data.
+
+```{r}
+df <- data.frame(n = c(1:12),
+                 m = rep(c("a","b","c","z"),3))
+df
+```
+
+Rows where m is "a" or "c"
+
+```{r}
+x <- df[df$m %in% c("a","c"),]
+ 
+x  
+```
+
+Rows where m is NOT "a" or "c"
+
+```{r}
+x <- df[!(df$m %in% c("a","c")),]
+ 
+x  
+```
+
+## UpShift and LowerShift
+
+The example data.
+
+```{r}
+df <- data.frame(n = c(1:12),
+                 m = rep(c("9","b","1","z","+","?"),2))
+df
+```
+
+UpShift column m
+
+```{r}
+df$m <- toupper(df$m)
+df
+```
+
+LowerShift column m
+
+```{r}
+df$m <- tolower(df$m)
+df
+```
+
+## Divide all Values in Column by Constant
+
+```{r}
+df <- data.frame(a = c(1:10), b = seq(2,20,by=2))
+df
+```
+
+Divide column by 2
+
+```{r}
+df$b <- df$b/2
+df
+```
