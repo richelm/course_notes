@@ -129,16 +129,37 @@ Consider a uniform distribution. If we were to sample 100 draws from a a uniform
 
 What is the approximate probability of getting as large as 0.51 or larger expressed to 3 decimal places?
 
+Hint: $Var(\bar{X}) = \sigma^2 / n$
+
+```{r}
+pnorm(0.51, mean=0.5, sd=sqrt(1/12/100), lower.tail = FALSE)
+```
 
 ## Question 8  
 If you roll ten standard dice, take their average, then repeat this process over and over and construct a histogram, what would it be centered at?
 
+Answer: 3.5
+
+The mean of the averages is the same as the mean of one die.
 
 ## Question 9  
 If you roll ten standard dice, take their average, then repeat this process over and over and construct a histogram, what would be its variance expressed to 3 decimal places?
 
+Hint: $Var(\bar{X}) = \sigma^2 / n$
+
+$\sigma^2 = 2.92$ the variance of a single di role and n is 10.
+
+```{r}
+round(2.92 / 10, 3)
+```
+**or**
+```{r}
+round(mean((1 : 6 - 3.5)^2 / 10), 3)
+```
 
 ## Question 10  
-The number of web hits to a site is Poisson with mean 16.5 per day. What is the probability of getting 20 or fewer in 2 days expressed as a percentage to one decimal place?
+The number of web hits to a site is Poisson with mean 16.5 per day. What is the probability of getting 20 or fewer in 2 days expressed as a **percentage** to one decimal place?
 
-
+```{r}
+round(ppois(20, lambda = 16.5*2)*100, 1)
+```

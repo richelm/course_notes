@@ -155,18 +155,32 @@ img {
 <h2>Question 7</h2>
 <p>Consider a uniform distribution. If we were to sample 100 draws from a a uniform distribution (which has mean 0.5, and variance 1/12) and take their mean, <span class="math">\(\bar{X}\)</span></p>
 <p>What is the approximate probability of getting as large as 0.51 or larger expressed to 3 decimal places?</p>
+<p>Hint: <span class="math">\(Var(\bar{X}) = \sigma^2 / n\)</span></p>
+<pre class="r"><code>pnorm(0.51, mean=0.5, sd=sqrt(1/12/100), lower.tail = FALSE)</code></pre>
+<pre><code>## [1] 0.3645172</code></pre>
 </div>
 <div id="question-8" class="section level2">
 <h2>Question 8</h2>
 <p>If you roll ten standard dice, take their average, then repeat this process over and over and construct a histogram, what would it be centered at?</p>
+<p>Answer: 3.5</p>
+<p>The mean of the averages is the same as the mean of one die.</p>
 </div>
 <div id="question-9" class="section level2">
 <h2>Question 9</h2>
 <p>If you roll ten standard dice, take their average, then repeat this process over and over and construct a histogram, what would be its variance expressed to 3 decimal places?</p>
+<p>Hint: <span class="math">\(Var(\bar{X}) = \sigma^2 / n\)</span></p>
+<p><span class="math">\(\sigma^2 = 2.92\)</span> the variance of a single di role and n is 10.</p>
+<pre class="r"><code>round(2.92 / 10, 3)</code></pre>
+<pre><code>## [1] 0.292</code></pre>
+<p><strong>or</strong></p>
+<pre class="r"><code>round(mean((1 : 6 - 3.5)^2 / 10), 3)</code></pre>
+<pre><code>## [1] 0.292</code></pre>
 </div>
 <div id="question-10" class="section level2">
 <h2>Question 10</h2>
-<p>The number of web hits to a site is Poisson with mean 16.5 per day. What is the probability of getting 20 or fewer in 2 days expressed as a percentage to one decimal place?</p>
+<p>The number of web hits to a site is Poisson with mean 16.5 per day. What is the probability of getting 20 or fewer in 2 days expressed as a <strong>percentage</strong> to one decimal place?</p>
+<pre class="r"><code>round(ppois(20, lambda = 16.5*2)*100, 1)</code></pre>
+<pre><code>## [1] 1</code></pre>
 </div>
 
 
