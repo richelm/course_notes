@@ -1,0 +1,35 @@
+---
+title: "Statistical Inference Project"
+author: "Shawn Rich"
+output: html_document
+---
+
+# motivation
+```{r}
+hist(runif(1000))
+```
+
+```{r}
+mns = NULL
+for (i in 1 : 1000) mns = c(mns, mean(runif(40)))
+hist(mns)
+```
+
+```{r}
+hist(rexp(n=1000,rate=0.2))
+```
+
+```{r}
+exp_means = NULL
+for (i in 1 : 1000) exp_means = c(exp_means, mean(rexp(n=40,rate=0.2)))
+hist(exp_means)
+```
+
+The mean, variance and stardard deviation of the exponential means distribution.
+
+```{r}
+mean(exp_means)
+var(exp_means)
+sd(exp_means)
+```
+

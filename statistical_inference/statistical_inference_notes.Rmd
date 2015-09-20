@@ -18,3 +18,14 @@ Suppose we don't know P(A) itself, but only know its conditional probabilities t
 We can then express $P(A) = P(A|B) * P(B) + P(A|~B) * P(~B)$ and substitute this is into the denominator of Bayes' Formula.
 
 $P(B|A) = \frac{P(A|B) * P(B)}{P(A|B) * P(B) + P(A|~B) * P(~B)}$
+
+## Common Distributions
+
+**Bernoulli**  
+Two outcomes: 1 (success) and 0 (failure)  
+$P(1) = p$ and $P(0) = 1 - p$  
+PMF: $p^x * (1-p)^(1-x)$  
+$E[X] = 1*p + 0*(1-p) = p$  
+$E[X^2] = 1^2p + 0^2(1-p) = p$  
+Var = $E[X^2] - ((E[X]))^2 = p - p^2 = p(1-p)$  
+
