@@ -4,32 +4,51 @@ author: "Shawn Rich"
 output: html_document
 ---
 
-# motivation
-```{r}
-hist(runif(1000))
+```{r, echo = FALSE}
+# load libraries
+library(ggplot2)
 ```
 
-```{r}
-mns = NULL
-for (i in 1 : 1000) mns = c(mns, mean(runif(40)))
-hist(mns)
-```
+## Synopsis  
+This report will investigate the exponential distribution and compare it with the Central Limit Theorem. This will be done using simulation in R.
+
+
+## Overview    
+For the simulation an exponential distribution having $\lambda = 0.2$ is used. From this 40 random samples are taken and their average calculated. This is repeated 1000 times to create a distribution of means. Recall that for an exponential distribution $\mu = \sigma = 1/\lambda$. For this simulation:
+
+* Let $X_i$ be the outcome for random variable $i$    
+* Then $\mu = E[X_i] = 1/0.2 = 5$  
+* $Var(X_i) = 5^2 = 25$  
+* SE = $\sqrt{\frac{25}{40}} = \frac{5}{2\sqrt{10}} = \frac{5\sqrt{10}}{20}$  
+
+Therefore our **theoretical mean** is **5** and our **theoretical variance** is **25**.
 
 ```{r}
-hist(rexp(n=1000,rate=0.2))
+#mu = 5
+#se = 5*sqrt(10)/20
+#mean_distro <- NULL
+#for (i in 1 : 1000) mean_distro <- c(mean_distro, (mean(rexp(n=40,rate=0.2)) - mu)/se)
+
+
+mean_distro <- NULL
+for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(40,0.2)))
+
+hist(mean_distro, col="lightgreen")
+
+#data <- data.frame(x = mean_distro, size= factor(rep("Sample Means",1000)))
+#g <- ggplot(data, aes(x=x)) + geom_histogram(binwidth=.3, colour = "black", #fill = "lightgreen", aes(y = ..density..)) 
+#g <- g + stat_function(fun = dnorm, size = 2)
+#g + scale_x_continuous(limits=c(2,3,4,5,6,7,8), breaks=1:7)
+#g + facet_grid(. ~ size)
 ```
 
-```{r}
-exp_means = NULL
-for (i in 1 : 1000) exp_means = c(exp_means, mean(rexp(n=40,rate=0.2)))
-hist(exp_means)
-```
 
-The mean, variance and stardard deviation of the exponential means distribution.
+The mean is `r round(mean(mean_distro),2)` and variance is `r round(var(mean_distro),2)`
 
-```{r}
-mean(exp_means)
-var(exp_means)
-sd(exp_means)
-```
+## Sample Mean versus Theoretical Mean  
 
+
+## Sample Variance versus Theoretical Variance
+
+
+## Distribution
