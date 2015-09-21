@@ -1,0 +1,24 @@
+---
+title: "Test"
+author: "Shawn Rich"
+date: "September 21, 2015"
+output: html_document
+---
+
+This is to test PDF setup.
+
+Example math equation.
+
+$P(A|B) = P(A \cap B)/P(B)$
+
+```{r}
+hist(rexp(1000,0.2))
+```
+
+```{r}
+set.seed(20150921)
+
+mydist = rexp(1000, 0.2)
+```
+
+The mean of mydist is: `r round(mean(mydist),2)` the variance is: `r round(var(mydist),2)`

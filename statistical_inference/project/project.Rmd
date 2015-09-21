@@ -1,7 +1,7 @@
 ---
 title: "Statistical Inference Project"
 author: "Shawn Rich"
-output: html_document
+output: pdf_document
 ---
 
 ```{r, echo = FALSE}
@@ -23,23 +23,12 @@ For the simulation an exponential distribution having $\lambda = 0.2$ is used. F
 
 Therefore our **theoretical mean** is **5** and our **theoretical variance** is **25**.
 
-```{r}
-#mu = 5
-#se = 5*sqrt(10)/20
-#mean_distro <- NULL
-#for (i in 1 : 1000) mean_distro <- c(mean_distro, (mean(rexp(n=40,rate=0.2)) - mu)/se)
-
+```{r, fig.width=5, fig.height = 4}
 
 mean_distro <- NULL
-for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(40,0.2)))
+for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(50,0.2)))
 
 hist(mean_distro, col="lightgreen")
-
-#data <- data.frame(x = mean_distro, size= factor(rep("Sample Means",1000)))
-#g <- ggplot(data, aes(x=x)) + geom_histogram(binwidth=.3, colour = "black", #fill = "lightgreen", aes(y = ..density..)) 
-#g <- g + stat_function(fun = dnorm, size = 2)
-#g + scale_x_continuous(limits=c(2,3,4,5,6,7,8), breaks=1:7)
-#g + facet_grid(. ~ size)
 ```
 
 
