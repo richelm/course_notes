@@ -1,7 +1,7 @@
 ---
 title: "Statistical Inference Project"
 author: "Shawn Rich"
-output: pdf_document
+output: html_document
 ---
 
 ```{r, echo = FALSE}
@@ -10,34 +10,65 @@ library(ggplot2)
 ```
 
 ## Synopsis  
-This report will investigate the exponential distribution and compare it with the Central Limit Theorem. This will be done using simulation in R.
+This report investigates the exponential distribution and compares it with the Central Limit Theorem (CLT). The investigate uses means of random iid  variables sampled from the exponential distribution to create a distribution that is used for comparison. 
 
 
-## Overview    
-For the simulation an exponential distribution having $\lambda = 0.2$ is used. From this 40 random samples are taken and their average calculated. This is repeated 1000 times to create a distribution of means. Recall that for an exponential distribution $\mu = \sigma = 1/\lambda$. For this simulation:
+## Simulation    
+For the simulation, an exponential distribution having $\lambda = 0.2$ is used. From this distribution, 40 random samples are taken and their average calculated. This is repeated 1000 times to create a distribution of 1000  means. 
 
-* Let $X_i$ be the outcome for random variable $i$    
-* Then $\mu = E[X_i] = 1/0.2 = 5$  
-* $Var(X_i) = 5^2 = 25$  
-* SE = $\sqrt{\frac{25}{40}} = \frac{5}{2\sqrt{10}} = \frac{5\sqrt{10}}{20}$  
+Using this distribution the following questions are addressed:
+1. How does the sample mean compare to the theoretical mean of the distribution?
+1. How variable is the sample (via variance) and compare it to the theoretical variance of the distribution?
+1. Is the distribution approximately normal?
 
-Therefore our **theoretical mean** is **5** and our **theoretical variance** is **25**.
+The R code below takes 40 random samples from the exponential distribution, computes their mean, and repeats this 1000 time to create a distribution of means. The 1000 means are stored variable *mean_distro*,
 
-```{r, fig.width=5, fig.height = 4}
+
+```{r}
 
 mean_distro <- NULL
-for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(50,0.2)))
+for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(40,0.2)))
 
+```
+
+With this distrbution we address the questions. 
+
+**1:**Sample mean versus theoretical mean. For an exponential distribution $\mu = 1/\lambda$. Since the simulation used $\lambda = 0.2$, the **theoretical mean** is $1/0.2 = 5$. The mean of the simulated distribution is:
+```{r}
+round(mean(mean_distro),2)
+```
+
+As can be seen, the sample is a close approximation to the theoretical mean. Which is exactly to be expected based on the CLT.
+
+**2:** Sample variance) versus the theoretical variance For an exponential distribution, the stadard deviation is $\sigma = 1/\lambda$. Again using $\lambda = 0.2$, the variance of the exponential distribution is $(1/0.2)^2 = 25$. 
+
+The Central Limit Theorem tells us that a distribtion of averages of iid variables is approximately a normal distribution with mean equal to the distribution mean and variance equal to the standard error of the distribution. The **theoretical variance** is then:
+$SE = \sqrt{\frac{\sigma^2}{n}} = \sqrt{\frac{25}{40}} = \frac{5}{2\sqrt{10}} = \frac{5\sqrt{10}}{20}$  
+
+The following R code calculates the theoretical variance and the variance of the mean distribution. As we see the variance of the sample distribution compares closely with the theoretical variance of the distribution.
+
+```{r}
+# theoretical variance
+round((5*sqrt(10)/20),2)
+
+# distribution variance
+round(var(mean_distro),2)
+
+```
+
+**3:** Is the sample distribution approximately normal?
+
+First let's look at a historgram of a collection of 1000 random exponentials using $\lambda = 0.2$. It certainly does not appear to be normally distributed.
+
+
+```{r, fig.width=5, fig.height = 4}
+hist(rexp(1000,0.2), col="lightgreen")
+```
+
+Now let's look at the sample mean distribution. It definitely has a Gaussian appearence.
+
+```{r, fig.width=5, fig.height = 4}
 hist(mean_distro, col="lightgreen")
 ```
 
 
-The mean is `r round(mean(mean_distro),2)` and variance is `r round(var(mean_distro),2)`
-
-## Sample Mean versus Theoretical Mean  
-
-
-## Sample Variance versus Theoretical Variance
-
-
-## Distribution
