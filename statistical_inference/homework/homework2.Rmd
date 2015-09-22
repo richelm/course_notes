@@ -3,7 +3,9 @@ title: "Statistical Inference Homework 2"
 output:
   html_document:
     theme: united
-    toc: yes
+    toc: no
+  pdf_document:
+    toc: no
 ---
 
 ## Question 1  

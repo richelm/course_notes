@@ -71,4 +71,19 @@ Now let's look at the sample mean distribution. It definitely has a Gaussian app
 hist(mean_distro, col="lightgreen")
 ```
 
+```{r}
+# !!! this code is broken !!!
+nosim <- 1000
+cfunc <- function(x, n) sqrt(n) * (x - 5) / 5
+std_mean_distro <- sapply(mean_distro, cfunc, 40)
+dat <- data.frame(
+  x = sapply(mean_distro, cfunc, 40),
+  size = factor(40, rep(nosim, 1)))
+g <- ggplot(dat, aes(x = x, fill = size)) + geom_histogram(alpha = .20, binwidth=.3, colour = "black", aes(y = ..density..)) 
+g
+#g <- g + stat_function(fun = dnorm, size = 2)
+g + facet_grid(. ~ size)
+g
+#hist(std_mean_distro)
+```
 
