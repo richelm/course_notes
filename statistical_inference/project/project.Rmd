@@ -1,12 +1,13 @@
 ---
 title: "Statistical Inference Project"
 author: "Shawn Rich"
-output: html_document
+output: pdf_document
 ---
 
 ```{r, echo = FALSE}
 # load libraries
 library(ggplot2)
+library(gridExtra)
 ```
 
 ## Synopsis  
@@ -16,31 +17,30 @@ This report investigates the exponential distribution and compares it with the C
 ## Simulation    
 For the simulation, an exponential distribution having $\lambda = 0.2$ is used. From this distribution, 40 random samples are taken and their average calculated. This is repeated 1000 times to create a distribution of 1000  means. 
 
-Using this distribution the following questions are addressed:
-1. How does the sample mean compare to the theoretical mean of the distribution?
-1. How variable is the sample (via variance) and compare it to the theoretical variance of the distribution?
-1. Is the distribution approximately normal?
+Using this distribution the following questions are addressed:  
+1. How does the sample mean compare to the theoretical mean of the distribution?  
+1. How variable is the sample (via variance) and compare it to the theoretical variance of the distribution?  
+1. Is the distribution approximately normal?  
 
 The R code below takes 40 random samples from the exponential distribution, computes their mean, and repeats this 1000 time to create a distribution of means. The 1000 means are stored variable *mean_distro*,
 
 
 ```{r}
-
+set.seed(201509)
 mean_distro <- NULL
 for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(40,0.2)))
-
 ```
 
 With this distrbution we address the questions. 
 
-**1:**Sample mean versus theoretical mean. For an exponential distribution $\mu = 1/\lambda$. Since the simulation used $\lambda = 0.2$, the **theoretical mean** is $1/0.2 = 5$. The mean of the simulated distribution is:
+**1: Sample mean versus theoretical mean**. For an exponential distribution $\mu = 1/\lambda$. Since the simulation used $\lambda = 0.2$, the **theoretical mean** is $1/0.2 = 5$. The mean of the simulated distribution is:
 ```{r}
 round(mean(mean_distro),2)
 ```
 
 As can be seen, the sample is a close approximation to the theoretical mean. Which is exactly to be expected based on the CLT.
 
-**2:** Sample variance) versus the theoretical variance For an exponential distribution, the stadard deviation is $\sigma = 1/\lambda$. Again using $\lambda = 0.2$, the variance of the exponential distribution is $(1/0.2)^2 = 25$. 
+**2: Sample variance) versus the theoretical variance.** For an exponential distribution, the stadard deviation is $\sigma = 1/\lambda$. Again using $\lambda = 0.2$, the variance of the exponential distribution is $(1/0.2)^2 = 25$. 
 
 The Central Limit Theorem tells us that a distribtion of averages of iid variables is approximately a normal distribution with mean equal to the distribution mean and variance equal to the standard error of the distribution. The **theoretical variance** is then:
 $SE = \sqrt{\frac{\sigma^2}{n}} = \sqrt{\frac{25}{40}} = \frac{5}{2\sqrt{10}} = \frac{5\sqrt{10}}{20}$  
@@ -58,30 +58,30 @@ round(var(mean_distro),2)
 
 **3:** Is the sample distribution approximately normal?
 
-First let's look at a historgram of a collection of 1000 random exponentials using $\lambda = 0.2$. It certainly does not appear to be normally distributed.
+Below on the left is a historgram of a collection of 1000 random exponentials using $\lambda = 0.2$. It certainly does not appear to be normally distributed. The histogram to the right of sample mean distribution definitely has a Gaussian appearence.
 
 
-```{r, fig.width=5, fig.height = 4}
-hist(rexp(1000,0.2), col="lightgreen")
+```{r, fig.width=8, fig.height = 5}
+dat <- data.frame(Random_Exponentials = rexp(1000,0.2))
+g1 <- ggplot(dat, aes(x=Random_Exponentials)) + geom_histogram(binwidth=.5, colour="black", fill="lightgreen")
+
+dat <- data.frame(Sample_Means = mean_distro)
+g2 <- ggplot(dat, aes(x=Sample_Means)) 
+g2 <- g2 + geom_histogram(binwidth=.5, colour="black", fill="lightgreen")
+
+grid.arrange(g1, g2, ncol=2)
 ```
 
-Now let's look at the sample mean distribution. It definitely has a Gaussian appearence.
 
-```{r, fig.width=5, fig.height = 4}
-hist(mean_distro, col="lightgreen")
-```
-
-
-To illustrate this further, we will take our distribution of means (**mean_distro**) and for each mean subtract off $\mu = 5$ and divide by our $SE = 5$. This will give us a standard normal distribution of our means. In the graph below this standard normal distribution of our means is compared with the standard normal curve. The histogram of mean fits quite nicely under the standard normal curve.
+To illustrate this further, we will take our distribution of sample means (**mean_distro**) and for each mean subtract off $\mu = 5$ and divide by our $SE = 5$. This will give us a standard normal distribution of our means. In the graph below this standard normal distribution of our means is compared with the standard normal curve. The histogram of means fits quite nicely under the standard normal curve.
 
 ```{r fig.width=5, fig.height = 4}
 nosim <- 1000
 cfunc <- function(x, n) sqrt(n) * (x - 5) / 5
-dat <- data.frame(
-  x = sapply(mean_distro, cfunc, 40),
-  size = factor(rep("40", nosim)))
+dat <- data.frame(x = sapply(mean_distro, cfunc, 40))
 
-g <- ggplot(dat, aes(x = x, fill = size)) + geom_histogram(alpha = .20, binwidth=.3, colour = "black", aes(y = ..density..)) 
-g <- g + stat_function(fun = dnorm, size = 2)
-g + facet_grid(. ~ size)
+g <- ggplot(dat, aes(x=x)) 
+g <- g + geom_histogram(binwidth=.5, colour="black", fill="lightgreen", aes(y = ..density..))
+g <- g + stat_function(fun = dnorm, size = 1)
+g
 ```
