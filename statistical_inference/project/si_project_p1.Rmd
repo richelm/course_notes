@@ -1,0 +1,92 @@
+---
+title: "Investigating the CLT with the Exponential Distribution in R"
+author: "Shawn Rich"
+output: html_document
+---
+
+```{r, echo = FALSE}
+# load libraries
+library(ggplot2)
+library(gridExtra)
+```
+
+## Synopsis  
+This report investigates the exponential distribution and compares it with the Central Limit Theorem (CLT). The investigate uses means of random iid  variables sampled from the exponential distribution to create a distribution of means that is used for comparison. 
+
+
+## Simulation    
+For the simulation, an exponential distribution having $\lambda = 0.2$ is used. From this distribution, 40 random samples are taken and their average calculated. This is repeated 1000 times to create a distribution of 1000  means.
+
+Using this distribution the following questions are addressed:  
+1. How does the sample mean compare to the theoretical mean of the distribution?  
+2. How variable is the sample (via variance) and compare it to the theoretical variance of the distribution?  
+3. Is the distribution approximately normal?  
+
+The R code below takes 40 random samples from the exponential distribution, computes their mean, and repeats this 1000 time to create a distribution of means. The 1000 means are stored variable **mean_distro**,
+
+
+```{r}
+# set seed for reproducibilty
+set.seed(201509)
+mean_distro <- NULL
+for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(40,0.2)))
+```
+
+With this distrbution we address the questions. 
+
+**1: Sample mean versus theoretical mean**. For an exponential distribution $\mu = 1/\lambda$. Since the simulation used $\lambda = 0.2$, the **theoretical mean** is $1/0.2 = 5$. The mean of the simulated distribution is:
+```{r}
+round(mean(mean_distro),2)
+```
+
+As can be seen, the sample mean is a close approximation to the theoretical mean. Which is exactly to be expected based on the CLT. This is further illustrated in the histogram below.
+
+**2: Sample variance versus the theoretical variance.** For an exponential distribution, the stadard deviation is $\sigma = 1/\lambda$. Again using $\lambda = 0.2$, the variance of the exponential distribution is $(1/0.2)^2 = 25$. 
+
+The Central Limit Theorem tells us that a distribtion of averages of iid variables is approximately a normal distribution with mean equal to the distribution mean and variance equal to the standard error of the distribution. The **theoretical variance** is then:
+$SE = \sqrt{\frac{\sigma^2}{n}} = \sqrt{\frac{25}{40}} = \frac{5}{2\sqrt{10}} = \frac{5\sqrt{10}}{20}$  
+
+The following R code calculates the theoretical variance and the variance of the mean distribution. As we see the variance of the sample distribution compares closely with the theoretical variance of the distribution.
+
+```{r}
+# theoretical variance
+round((5*sqrt(10)/20),2)
+
+# distribution variance
+round(var(mean_distro),2)
+
+```
+
+**3: Is the sample distribution approximately normal?**
+
+Below on the left is a historgram of a collection of 1000 random exponentials using $\lambda = 0.2$. It certainly does not appear to be normally distributed. The histogram to the right is that of our sample mean (**mean_distro**). It definitely has a Gaussian appearence. The dotted red line indicates the mean. As we can see, it is centered close to the theoretical mean of 5.
+
+
+```{r, fig.width=9, fig.height = 6}
+dat <- data.frame(Random_Exponentials = rexp(1000,0.2))
+g1 <- ggplot(dat, aes(x=Random_Exponentials)) + geom_histogram(binwidth=.5, colour="black", fill="lightgreen")
+
+dat <- data.frame(Sample_Means = mean_distro)
+g2 <- ggplot(dat, aes(x=Sample_Means)) 
+g2 <- g2 + geom_histogram(binwidth=.5, colour="black", fill="lightgreen")
+g2 <- g2 + geom_vline(aes(xintercept=mean(mean_distro)),
+               color="red", linetype="dashed", size=1)
+
+grid.arrange(g1, g2, ncol=2)
+```
+
+
+To illustrate this further, we will take our distribution of sample means (**mean_distro**) and for each mean subtract off $\mu = 5$ and divide by our $SE = \sqrt{25/40}$. This will give us a standard normal distribution of our means. In the graph below this standard normal distribution of our means is compared with the standard normal curve ($\mu = 0$ and $\sigma = 1$). The histogram of means fits quite nicely under the standard normal curve.
+
+```{r fig.width=4.5, fig.height = 6}
+nosim <- 1000
+cfunc <- function(x, n) sqrt(n) * (x - 5) / 5
+dat <- data.frame(x = sapply(mean_distro, cfunc, 40))
+
+g <- ggplot(dat, aes(x=x)) 
+g <- g + geom_histogram(binwidth=.5, colour="black", fill="lightgreen", aes(y = ..density..))
+g <- g + geom_vline(aes(xintercept=mean(dat$x)),
+               color="red", linetype="dashed", size=1)
+g <- g + stat_function(fun = dnorm, size = 1)
+g
+```
