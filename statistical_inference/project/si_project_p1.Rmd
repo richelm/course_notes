@@ -32,7 +32,7 @@ mean_distro <- NULL
 for (i in 1 : 1000) mean_distro = c(mean_distro, mean(rexp(40,0.2)))
 ```
 
-With this distrbution we address the questions. 
+With this distribution we address the questions. 
 
 **1: Sample mean versus theoretical mean**. For an exponential distribution $\mu = 1/\lambda$. Since the simulation used $\lambda = 0.2$, the **theoretical mean** is $1/0.2 = 5$. The mean of the simulated distribution is:
 ```{r}
@@ -41,9 +41,9 @@ round(mean(mean_distro),2)
 
 As can be seen, the sample mean is a close approximation to the theoretical mean. Which is exactly to be expected based on the CLT. This is further illustrated in the histogram below.
 
-**2: Sample variance versus the theoretical variance.** For an exponential distribution, the stadard deviation is $\sigma = 1/\lambda$. Again using $\lambda = 0.2$, the variance of the exponential distribution is $(1/0.2)^2 = 25$. 
+**2: Sample variance versus the theoretical variance.** For an exponential distribution, the standard deviation is $\sigma = 1/\lambda$. Again using $\lambda = 0.2$, the variance of the exponential distribution is $(1/0.2)^2 = 25$. 
 
-The Central Limit Theorem tells us that a distribtion of averages of iid variables is approximately a normal distribution with mean equal to the distribution mean and variance equal to the standard error of the distribution. The **theoretical variance** is then:
+The Central Limit Theorem tells us that a distribution of averages of iid variables is approximately a normal distribution with mean equal to the distribution mean and variance equal to the standard error of the distribution. The **theoretical variance** is then:
 $SE = \sqrt{\frac{\sigma^2}{n}} = \sqrt{\frac{25}{40}} = \frac{5}{2\sqrt{10}} = \frac{5\sqrt{10}}{20}$  
 
 The following R code calculates the theoretical variance and the variance of the mean distribution. As we see the variance of the sample distribution compares closely with the theoretical variance of the distribution.
@@ -59,7 +59,7 @@ round(var(mean_distro),2)
 
 **3: Is the sample distribution approximately normal?**
 
-Below on the left is a historgram of a collection of 1000 random exponentials using $\lambda = 0.2$. It certainly does not appear to be normally distributed. The histogram to the right is that of our sample mean (**mean_distro**). It definitely has a Gaussian appearence. The dotted red line indicates the mean. As we can see, it is centered close to the theoretical mean of 5.
+Below on the left is a histogram of a collection of 1000 random exponentials using $\lambda = 0.2$. It certainly does not appear to be normally distributed. The histogram to the right is that of our sample mean (**mean_distro**). It definitely has a Gaussian appearance. The dotted red line indicates the mean. As we can see, it is centered close to the theoretical mean of 5.
 
 
 ```{r, fig.width=9, fig.height = 6}

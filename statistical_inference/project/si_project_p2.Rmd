@@ -1,5 +1,5 @@
 ---
-title: "Analysis of ToothGrowth Data using T Test"
+title: "Analysis of Tooth Growth Data using T Test"
 author: "Shawn Rich"
 date: "09/26/2015"
 output: pdf_document
