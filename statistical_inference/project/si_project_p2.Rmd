@@ -39,12 +39,13 @@ str(ToothGrowth)
 table(ToothGrowth$supp,ToothGrowth$dose)
 ```
 
+
 The table shows that there are 10 guinea pigs in each of the six dosage/supplement groups. It will be assumed that there is no overlap in the groups and therefore independent.
 
 
 ## Analysis
 
-For our analysis we first split the data base on supplement.
+For our analysis we first split the data based on supplement.
 
 ```{r}
 OJ <- data.frame(len = ToothGrowth$len[supp=="OJ"],
@@ -52,6 +53,33 @@ OJ <- data.frame(len = ToothGrowth$len[supp=="OJ"],
 VC <- data.frame(len = ToothGrowth$len[supp=="VC"],
                  dose = ToothGrowth$dose[supp=="VC"])
 ```
+
+
+Using these two sets we first examine dosage size on the effect of tooth length. For this we conduct T test for each form of vitamin C and compare only the dose 0.5mg/day with that of 2.0mg/day
+
+Effects of OJ on tooth length at dose 0.5 mg/day to 2.0 mg/day.
+
+```{r}
+t.test(OJ$len[dose== 0.5], OJ$len[dose == 1.0],paired = FALSE, var.equal = FALSE)
+```
+
+Increased dosage of vitamin in C provided in orange provides greater tooth growth.
+
+Compare effects of VC on tooth length at dose 0.5 mg/day to 2.0 mg/day.
+
+```{r}
+t.test(VC$len[dose== 0.5], VC$len[dose == 2.0],paired = FALSE, var.equal = FALSE)
+```
+
+Increased does of vitamin in C provided in vitamin C supplement provides greater tooth growth.
+
+Since higher dosages for both OJ and VC yielded greater tooth growth, we next compare OJ to VC at dosage level of 2.0mg/day. Does vitamin C supplement give better results (greater tooth length) than orange juice?
+
+```{r}
+t.test(OJ$len[dose== 2.0], VC$len[dose == 2.0],paired = FALSE, var.equal = FALSE)
+```
+
+It appears that vitamin C supplement does not provide better results.
 
 <!--
 Now in the second portion of the class, we're going to analyze the ToothGrowth data in the R datasets package. 
