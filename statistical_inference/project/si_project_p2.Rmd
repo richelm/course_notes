@@ -1,98 +1,88 @@
 ---
-title: "ToothGrowth Data Analysis"
+title: "Analysis of ToothGrowth Data using T Test"
 author: "Shawn Rich"
 date: "09/26/2015"
-output: html_document
+output: pdf_document
 ---
-
-```{r, echo = FALSE}
-# load libraries
-library(ggplot2)
-library(gridExtra)
-library(datasets)
-```
 
 ## Synopsis
 
-The goal of this report is to provide analysis of the ToothGrowth dataset from the R datasets package. 
+The goal of this report is to provide analysis of the ToothGrowth dataset from the R datasets package. Specifically we will use R t.test function to investigate whether increased amounts of vitamin C supplement increase tooth growth in guinea pigs.
 
-## Code Book
+## Summary of Data
 
-From documentation of the ToothGrowth dataset we know it contains data from a study of the effect of vitamin C on tooth growth in 60 guinea pigs. The data consist of 60 observations on three variables. The variables are:
+First we load the data and perform some basic exploration.
 
+```{r}
+library(datasets)
+attach(ToothGrowth)
+# structure of data
+str(ToothGrowth)
+
+```
+
+The variables are:  
 **len** (numeric) - Tooth Length    
 **supp** (factor) - Type of vitamin supplement. Orange juice *OJ* or vitamin C supplement *VC*  
 **dose** (numeric) - Dosage in milligrams per day.  
 
-## Summary of Data
-
-Load the data and perform some basic exploration to see if it matches what we know from the documentation.
-
+The table below shows the samples sizes. There are 10 guinea pigs in each of the six dosage/supplement groups which accounts for all 60 observations.
 
 ```{r}
-attach(ToothGrowth)
-# number of rows in dataset
-nrow(ToothGrowth)
-# structure of data
-str(ToothGrowth)
 # cross tab of supp vs dose
 table(ToothGrowth$supp,ToothGrowth$dose)
 ```
 
 
-The table shows that there are 10 guinea pigs in each of the six dosage/supplement groups. It will be assumed that there is no overlap in the groups and therefore independent.
+## Assumptions
+
+1. It will be assumed that there is no overlap in the sample groups and are therefore independent. Base on this we will use *paired = FALSE* in our t.test.  
+2. We also assume that the variances among the groups are not equal and will use *var.equal = FALSE* in our t.test.
 
 
 ## Analysis
 
-For our analysis we first split the data based on supplement.
+For our analysis we first split the data based on supplement type and dosage size. For the analysis we will only compare the two dosage groups of 0.5mg/day and 2.0mg/day.
 
 ```{r}
-OJ <- data.frame(len = ToothGrowth$len[supp=="OJ"],
-                 dose = ToothGrowth$dose[supp=="OJ"])
-VC <- data.frame(len = ToothGrowth$len[supp=="VC"],
-                 dose = ToothGrowth$dose[supp=="VC"])
+OJ05 <- data.frame(len = ToothGrowth$len[supp=="OJ" & dose == 0.5])
+OJ20 <- data.frame(len = ToothGrowth$len[supp=="OJ" & dose == 2.0])
+VC05 <- data.frame(len = ToothGrowth$len[supp=="VC" & dose == 0.5])
+VC20 <- data.frame(len = ToothGrowth$len[supp=="VC" & dose == 2.0])
 ```
 
 
-Using these two sets we first examine dosage size on the effect of tooth length. For this we conduct T test for each form of vitamin C and compare only the dose 0.5mg/day with that of 2.0mg/day
+Using these data vectors of tooth length base on dosage and supplement type we examine effects of vitamin C on tooth length. For this we conduct t.test for each form of vitamin C comparing the dose 0.5mg/day with that of 2.0mg/day. We wish to determine if higher doses of vitamin C increase tooth growth. Our null hypothesis and alternative hypothesis are as follows:
 
-Effects of OJ on tooth length at dose 0.5 mg/day to 2.0 mg/day.
+$H_{o} = \mu_{1} = \mu_{2}$ or $\mu_{1} - \mu_{2} = 0$  
+$H_{a} = \mu_{1} < \mu_{2}$ or $\mu_{1} - \mu_{2} < 0$
 
-```{r}
-t.test(OJ$len[dose== 0.5], OJ$len[dose == 1.0],paired = FALSE, var.equal = FALSE)
-```
-
-Increased dosage of vitamin in C provided in orange provides greater tooth growth.
-
-Compare effects of VC on tooth length at dose 0.5 mg/day to 2.0 mg/day.
+**Orange Juice**  
+Below is output of t.test for effect of OJ on tooth length at dose 0.5 mg/day and 2.0 mg/day.
 
 ```{r}
-t.test(VC$len[dose== 0.5], VC$len[dose == 2.0],paired = FALSE, var.equal = FALSE)
+t.test(OJ05, OJ20, alternate=c("twosided","less"), 
+       paired = FALSE, var.equal = FALSE)
 ```
 
-Increased does of vitamin in C provided in vitamin C supplement provides greater tooth growth.
+The 95% confidence interval lies completely below 0 and therefore unlikely that $\mu_{1} - \mu_{2} = 0$. So, we can reject null hypothesis in favor of the alternate hypothesis. Increase levels of vitamin C from orange juice would appear to increase tooth growth.
 
-Since higher dosages for both OJ and VC yielded greater tooth growth, we next compare OJ to VC at dosage level of 2.0mg/day. Does vitamin C supplement give better results (greater tooth length) than orange juice?
+**Vitamin C Supplement**  
+Below is output of t.test for effect of VC on tooth length at dose 0.5 mg/day and 2.0 mg/day.
 
 ```{r}
-t.test(OJ$len[dose== 2.0], VC$len[dose == 2.0],paired = FALSE, var.equal = FALSE)
+t.test(VC05, VC20, alternate=c("twosided","less"), 
+       paired = FALSE, var.equal = FALSE)
 ```
 
-It appears that vitamin C supplement does not provide better results.
+Again the 95% confidence interval lies completely below 0 and therefore unlikely that $\mu_{1} - \mu_{2} = 0$. So, we can reject null hypothesis in favor of the alternate hypothesis. Increase levels of vitamin C supplement would appear to increase tooth growth.
 
-<!--
-Now in the second portion of the class, we're going to analyze the ToothGrowth data in the R datasets package. 
+**OJ vs VC**  
+Lastly, is there a difference between the supplements? For this we compare OJ20 to VC20. Our null hypothesis and alternative hypothesis remains as before.
 
-    Load the ToothGrowth data and perform some basic exploratory data analyses 
-    Provide a basic summary of the data.
-    Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
-    State your conclusions and the assumptions needed for your conclusions. 
+```{r}
+t.test(OJ20, VC20, alternate=c("twosided","less"), 
+       paired = FALSE, var.equal = FALSE)
+```
 
-Some criteria that you will be evaluated on
-
-    Did you  perform an exploratory data analysis of at least a single plot or table highlighting basic features of the data?
-    Did the student perform some relevant confidence intervals and/or tests?
-    Were the results of the tests and/or intervals interpreted in the context of the problem correctly? 
-    Did the student describe the assumptions needed for their conclusions?
--->
+Here the 95% confidence interval contains 0. In fact, zero appears to be quite nearly in the center of the interval. The p-value is also large. Based on this we accept the null hypothesis and conclude that there is no difference in type of vitamin C supplement on tooth growth. 
