@@ -1,7 +1,7 @@
 ---
 title: "Investigating the CLT with the Exponential Distribution in R"
 author: "Shawn Rich"
-output: html_document
+output: pdf_document
 ---
 
 ```{r, echo = FALSE}
