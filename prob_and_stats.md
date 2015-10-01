@@ -14,3 +14,15 @@ Multiplication Rule: if have experiment with n posssible
 Probability of getting a full house
 
 13*(4,3)*12(4,2)/(52,5)
+
+## Resources
+
+### Books  
+*Statistics is Easy* by Shasha & Wilson
+
+### Websites  
+* [https://speakerdeck.com/jakevdp/statistics-for-hackers](https://speakerdeck.com/jakevdp/statistics-for-hackers)  
+* [https://en.wikipedia.org/wiki/Student's_t-test](https://en.wikipedia.org/wiki/Student's_t-test)  
+* [https://en.wikipedia.org/wiki/Student's_t-distribution](https://en.wikipedia.org/wiki/Student's_t-distribution)    
+
+
