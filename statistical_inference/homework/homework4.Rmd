@@ -11,6 +11,16 @@ You want to test whether the true MPG is $\mu_0$ or smaller using a one sided 5%
 
 1. Based on the mean MPG of the sample $\bar{x}, and by using a Z test: what is the smallest value of $\mu_0$ that you would reject for (to two decimal places)?
 
+```{r}
+library(datasets)
+attach(mtcars)
+mn <- mean(mtcars$mpg)
+s <- sd(mtcars$mpg)
+z <- qnorm(.05)
+mu0 <- mn - z * s / sqrt(nrow(mtcars))
+mean_mpg + qnorm()
+```
+
 
 ## Question 2  
 Consider again the mtcars dataset. Use a two group t-test to test the hypothesis that the 4 and 6 cyl cars have the same mpg. Use a two sided test with unequal variances.  
