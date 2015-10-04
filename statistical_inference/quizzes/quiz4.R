@@ -36,24 +36,8 @@ sd = 0.04
 mu + qnorm(0.975)*sd/sqrt(n)
 
 # question 8
-library(pwr)
-h = 0
-n = NULL
-p = 90
-sl = 0.05
-pwr.2p.test(h=0, n=NULL, sig.level = 0.05, power=0.90,alternative = "greater")
-
-
-power.t.test(delta=0.0,sd=0.04,power=0.9,type = "one.sample",alternative = "one.sided")
-
-(qnorm(.95) + qnorm(.9)) ^ 2 * .04 ^ 2 / .01^2
-(qnorm(.95) + qnorm(.8)) ^ 2 * .04 ^ 2 / .01^2
-
-alpha = 0.05
-mu0 = 0.01
-mua = 0.02
-sigma = 0.04
-n = 140
-z = qnorm(1 - alpha)
-pnorm(mu0 + z * sigma/sqrt(n), mean = mua, sd = sigma/sqrt(n), lower.tail = FALSE)
-
+z <- qnorm(1-0.05)
+s <- 0.04
+p <- .9
+n = (z*s/p)^2
+n
