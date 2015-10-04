@@ -1,0 +1,20 @@
+---
+title: "Little Book Exercises"
+author: "Shawn Rich"
+date: "October 4, 2015"
+output: html_document
+---
+## Overview
+
+Some exercises from *Little Inference Book* by Brian Caffo.
+
+**Exercise 1**  
+Consider a uniform distribution. If we were to sample 100 draws from a a uniform distribution (which has mean 0.5, and variance 1/12) and take their mean, $\bar{X}$. What is the approximate probability of getting as large as 0.51 or larger? **364**
+
+```{r}
+m <- 0.5
+n <- 100
+s <- sqrt(1/12/n)
+
+pnorm(0.51, mean=m, sd=s, lower.tail = FALSE )
+```
