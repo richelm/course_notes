@@ -1,0 +1,36 @@
+---
+title: "Birthday Problem"
+author: "Shawn Rich"
+date: "October 19, 2015"
+output: pdf_document
+fontsize: 11pt
+geometry: margin=0.75in
+---
+
+**Overview**
+
+In a group of people, what is the probability of at least two people having the same birthday? The plot below shows the probabiltity of group sizes up to 90. 
+
+```{r echo=FALSE}
+library(ggplot2)
+```
+
+```{r fig.width=5, fig.height = 3.5}
+# calculate the probability of two people having same birthday
+# in group sizes up to 90 people
+dat <- data.frame(group_size = c(1:90))
+dat$probability <- sapply(dat$group_size,function(x) 
+  1 - prod(365:(365 - (x -1))) / 365^x)
+
+# plot the results
+ggplot(data=dat, aes(x = group_size, y=probability)) +
+  geom_line(colour="black") +
+  coord_cartesian(xlim = c(0,90)) + scale_x_continuous(breaks=seq(0,90,10))  +
+  coord_cartesian(ylim = c(0.00,1.00)) + 
+  scale_y_continuous(breaks=seq(0.00,1.00,0.10))
+```
+
+
+* What does the group size need to be in order to have a 50% chance that two people will have the same birthday?
+* What about a 70% chance?
+* Group sizes over what size will give us a nearly 100% chance of two people having same birthday?
