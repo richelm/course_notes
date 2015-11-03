@@ -22,3 +22,9 @@
 # ----------
 *.xls
 *.cvs
+#
+# directories
+# -----------
+# cloned from Allen Downey's github
+# just wanted the iPython notebooks
+CompStats/
