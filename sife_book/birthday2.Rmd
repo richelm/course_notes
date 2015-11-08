@@ -11,7 +11,7 @@ In a group of *n* people, what is the probability that at least two will have th
 
 Let B = the probability that at least two people of the same birthday. Then:
 
-$P(B) = 1 - \frac{365}{365} * \frac{364}{365} * \frac{363}{365} * \ldots \frac{365 - (n-1)}{365}$
+$$P(B) = 1 - \frac{365}{365} * \frac{364}{365} * \frac{363}{365} * \ldots \frac{365 - (n-1)}{365}$$
 
 In the above formula we calculate the probability that no one has the same birthday and subtract this from 1. This approach make the calculation easier. The **R** code below implements this formula in the *sapply* function.
 
