@@ -21,7 +21,17 @@
 # data files
 # ----------
 *.xls
+<<<<<<< HEAD
 #
 # directories
 # -----------
 data/
+=======
+*.cvs
+#
+# directories
+# -----------
+# cloned from Allen Downey's github
+# just wanted the iPython notebooks
+CompStats/
+>>>>>>> 76e97f410daeac269838ec070f837115e6ec7103

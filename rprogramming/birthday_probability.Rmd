@@ -1,0 +1,14 @@
+---
+title: "birthday_probability.Rmd"
+author: "Shawn Rich"
+date: "November 4, 2015"
+output: pdf_document
+---
+
+# Overview
+
+From a dataset of actual birthdates 
+
+```{r}
+
+```
