@@ -1,0 +1,39 @@
+---
+title: "Regression Models Exercises"
+author: "Shawn Rich"
+date: "November 13, 2015"
+output: pdf_document
+---
+
+## Introduction
+
+1. Consider the dataset given by x=c(0.725,0.429,-0.372 ,0.863). What value of mu minimizes sum((x - mu)^2)?
+
+$X_bar$ is the value of mu that minimizes for a dataset.
+
+```{r}
+x <- c(0.725,0.429,-0.372 ,0.863)
+mean(x)
+```
+
+2. Reconsider the previous question. Suppose that weights were given, w = c(2, 2, 1, 1) so that we wanted to minimize sum(w * (x - mu) ^ 2) for mu. What value would we obtain? 
+
+```{r}
+x <- c(0.725,0.429,-0.372 ,0.863)
+w <- c(2, 2, 1, 1)
+xw <- x * w
+mean(xw)
+```
+
+3. Take the Galton and obtain the regression through the origin slope estimate where the centered parental height is the outcome and the child’s height is the predictor.
+
+```{r}
+library(UsingR)
+data(galton)
+y <- galton$parent
+x <- galton$child
+yc <- y - mean(y)
+xc <- x - mean(x)
+sum(yc * xc) / sum(xc^2)
+lm(formula = yc ~ xc - 1)
+```
