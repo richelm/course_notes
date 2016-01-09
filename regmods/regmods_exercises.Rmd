@@ -4,6 +4,9 @@ author: "Shawn Rich"
 date: "November 13, 2015"
 output: html_document
 ---
+```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(UsingR)
+```
 
 ## Introduction
 
@@ -28,12 +31,50 @@ mean(xw)
 3. Take the Galton and obtain the regression through the origin slope estimate where the centered parental height is the outcome and the child’s height is the predictor.
 
 ```{r}
-library(UsingR)
 data(galton)
 y <- galton$parent
 x <- galton$child
 yc <- y - mean(y)
 xc <- x - mean(x)
 sum(yc * xc) / sum(xc^2)
+```
+
+We get the same result with lm.
+
+```{r}
 lm(formula = yc ~ xc - 1)
+```
+
+We get same slope coefficient with y as the outcome and x as the predictor.
+
+```{r}
+lm(formula = y ~ x)
+```
+
+## Notation
+
+1. Take the Galton dataset and find the mean, standard deviation and correlation between the parental and child heights.
+
+```{r}
+data(galton)
+summary(galton)
+cor(galton)
+```
+
+2. Center the parent and child variables and verify that the centered variable means are 0. 
+
+```{r}
+
+```
+
+3. Rescale the parent and child variables and verify that the scaled variable standard deviations are 1. 
+
+```{r}
+
+```
+
+4. Normalize the parental and child heights. Verify that the normalized variables have mean 0 and standard deviation 1 and take the correlation between them. 
+
+```{r}
+
 ```
