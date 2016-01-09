@@ -6,6 +6,7 @@ output: html_document
 ---
 ```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
 library(UsingR)
+data(galton)
 ```
 
 ## Introduction
@@ -31,7 +32,6 @@ mean(xw)
 3. Take the Galton and obtain the regression through the origin slope estimate where the centered parental height is the outcome and the child’s height is the predictor.
 
 ```{r}
-data(galton)
 y <- galton$parent
 x <- galton$child
 yc <- y - mean(y)
@@ -98,3 +98,148 @@ cor(xn,yn)
 cor(x,y)
 ```
 **NOTE** The cor(x,y) = cor(xn,yn) because correlation is a unit free quantity.
+
+## Ordinary Least Squares
+
+1. Install and load the package UsingR and load the father.son data with data(father.son).  Get the linear regression fit where the son’s height is the outcome and the father’s height is the predictor. Give the intercept and the slope, plot the data and overlay the fitted regression line.
+
+```{r}
+data("father.son")
+x <- father.son$fheight
+y <- father.son$sheight
+
+fit <- lm(y ~ x)
+
+# checking
+# slope 
+b1 <- cor(y, x) * sd(y)/sd(x)
+# intercept
+b0 <- mean(y) - b1*mean(x)
+rbind(c(b0,b1),coef(fit))
+```
+
+2. Center the father and son variables and refit the model omitting the intercept. Verify that the slope estimate is the same as the linear regression fit from problem 1. 
+
+```{r}
+x <- father.son$fheight
+y <- father.son$sheight
+xc <- x - mean(x)
+yc <- y - mean(y)
+fit <- lm(yc ~ xc)
+beta1 <- sum(yc * xc) / sum(xc ^ 2)
+c(beta1, coef(fit)[2])
+```
+
+3. Refer to problem 1. Normalize the father and son data and see that the fitted slope is the correlation. 
+
+```{r}
+x <- father.son$fheight
+y <- father.son$sheight
+xn <- (x - mean(x)) / sd(x)
+yn <- (y - mean(y)) / sd(y)
+fit <- lm(yn ~ xn)
+c(cor(xn,yn),coef(fit)[2])
+```
+
+4. Go back to the linear regression line from Problem 1. If a father’s height was 63 inches, what would you predict the son’s height to be?
+
+```{r}
+x <- father.son$fheight
+y <- father.son$sheight
+
+fit <- lm(y ~ x)
+
+b0 <- coef(fit)[1]
+b1 <- coef(fit)[2]
+ch <- b0 + b1 * 63
+c(63,ch)
+
+# using predict function (as in the solutions video)
+predict(fit, newdata = data.frame(x = 63))
+```
+
+5. Consider a data set where the standard deviation of the outcome variable is double that of the predictor. Also, the variables have a correlation of 0.3. If you fit a linear regression model, what would be the estimate of the slope?
+
+**Recall:**
+y = beta0 + beta1 * x
+beta1 = cor(y,x) * sd(y)/sd(x)
+
+**Given:**
+x is the predictor
+y is the outcome
+cor(y,x) = 0.3
+sd(y) = 2*sd(x)
+
+**Then:**
+beta1 = 0.3 * 2sd(x)/sd(x)
+beta1 = 0.3 * 2
+
+```{r}
+0.3 * 2
+```
+
+6. Consider the previous problem. The outcome variable has a mean of 1 and the predictor has a mean of 0.5. What would be the intercept?
+
+**Recall**
+$\beta_0 = \bar{Y} - \beta_1 * \bar{X}$
+
+
+```{r}
+# Given
+b1 = 0.6
+ym = 1
+xm = 0.5
+
+# Then
+b0 = ym - b1 * xm
+b0
+```
+
+7. True or false, if the predictor variable has mean 0, the estimated intercept from linear regression will be the mean of the outcome? **TRUE**
+
+Recall: $\beta_0 = \bar{Y} - \beta_1 * \bar{X}$
+
+If $\bar{X} = 0$, then $\beta_0 = \bar{Y} - \beta_1 * 0 = \bar{Y}$
+
+
+8. Consider problem 5 again. What would be the estimated slope if the predictor and outcome were reversed? 
+
+**Recall**
+y = beta0 + beta1 * x
+beta1 = cor(y,x) * sd(y)/sd(x)
+
+**Given**
+x is the predictor
+y is the outcome
+cor(y,x) = 0.3
+sd(y) = 2*sd(x)
+
+**Then**
+reversing predictor and outcome
+beta1 = 0.3 * sd(x)/2sd(x)
+beta1 = 0.3 * 1/2
+
+```{r}
+0.3 * (1/2)
+```
+
+
+## Regression to the Mean
+
+1. You have two noisy scales and a bunch of people that you’d like to weigh. You weigh each person on both scales. The correlation was 0.75. If you normalized each set of weights, what would you have to multiply the weight on one scale to get a good estimate of the weight on the other scale?
+
+```{r}
+
+```
+
+2. Consider the previous problem. Someone’s weight was 2 standard deviations above the mean of the group on the first scale. How many standard deviations above the mean would you estimate them to be on the second?
+
+```{r}
+
+```
+
+3. You ask a collection of husbands and wives to guess how many jellybeans are in a jar. The correlation is 0.2. The standard deviation for the husbands is 10 beans while the standard deviation for wives is 8 beans. Assume that the data were centered so that 0 is the mean for each. The centered guess for a husband was 30 beans (above the mean). What would be your best estimate of the wife’s guess?
+
+```{r}
+
+```
