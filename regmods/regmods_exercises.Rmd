@@ -64,17 +64,37 @@ cor(galton)
 2. Center the parent and child variables and verify that the centered variable means are 0. 
 
 ```{r}
-
+x <- galton$parent
+y <- galton$child
+xc <- x - mean(x)
+yc <- y - mean(y)
+mean(xc)
+mean(yc)
 ```
 
 3. Rescale the parent and child variables and verify that the scaled variable standard deviations are 1. 
 
 ```{r}
-
+x <- galton$parent
+y <- galton$child
+xs <- x/sd(x)
+ys <- y/sd(y)
+sd(xs)
+sd(ys)
 ```
 
 4. Normalize the parental and child heights. Verify that the normalized variables have mean 0 and standard deviation 1 and take the correlation between them. 
 
 ```{r}
-
+x <- galton$parent
+y <- galton$child
+xn <- (x - mean(x)) / sd(x)
+yn <- (y - mean(y)) / sd(y)
+mean(xn)
+sd(xn)
+mean(yn)
+sd(yn)
+cor(xn,yn)
+cor(x,y)
 ```
+**NOTE** The cor(x,y) = cor(xn,yn) because correlation is a unit free quantity.
