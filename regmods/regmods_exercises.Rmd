@@ -2,7 +2,7 @@
 title: "Regression Models Exercises"
 author: "Shawn Rich"
 date: "November 13, 2015"
-output: pdf_document
+output: html_document
 ---
 
 ## Introduction
