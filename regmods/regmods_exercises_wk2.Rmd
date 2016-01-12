@@ -6,9 +6,11 @@ output: html_document
 ---
 
 ```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(ggplot2)
 library(UsingR)
 data("galton")
 data("father.son")
+
 ```
 
 
@@ -32,41 +34,188 @@ summary(fit)$coef
 
 2. Refer to question 1. Interpret both parameters. Recenter for the intercept if necessary.
 
-```{r}
+We recenter the data because the intercept from question 1 is when the predictor is zero. Which is not very meaningful, since no one can have zero height. If we center the fathers height, the intercept is then the height of a son at the average of the fathers height.
 
+```{r}
+fit <- lm(sheight ~ I(fheight - mean(fheight)), data=father.son)
+summary(fit)$coef
 ```
 
 3. Refer to question 1. Predict the son’s height if the father’s height is 80 inches. Would you recommend this prediction? Why or why not?
 
 ```{r}
+fit <- lm(sheight ~ fheight, data=father.son)
 
+# manaul method
+b0 <- summary(fit)$coef[1]
+b1 <- summary(fit)$coef[2]
+psh1 <- b0 + b1*80
+
+# with predict function
+psh2 <- predict(fit, newdata = data.frame(fheight = 80))
+c(b0, b1, psh1, psh2)
+
+summary(father.son)
 ```
+
+This is a valid prediction, however, we may not want to recommend since 80 inches is outside the observed data. The maximum height of father data is 75.43.
 
 4. Load the mtcars dataset. Fit a linear regression with miles per gallon as the outcome and horsepower as the predictor. Interpret your coefficients, recenter for the intercept if necessary. 
 
-```{r}
+The intercept at horsepower equal to zero, does not make sense. If we center the horsepower data, then we get mgp for average horsepower.
 
+The expected mpg at average horsepower is 20mpg. For every 1 increase in horsepower we can expect a 0.068 decrease in mgp.
+
+```{r}
+data("mtcars")
+fit <- lm(mpg ~ I(hp - mean(hp)), data=mtcars)
+summary(fit)$coef
 ```
 
 5. Refer to question 4. Overlay the fit onto a scatterplot.
 
-
-```{r}
-
+```{r, echo = FALSE, fig.height=5,fig.width=5}
+data("mtcars")
+g = ggplot(mtcars, aes(x = mpg, y = (hp - mean(hp))))
+g = g + xlab("Horsepower")
+g = g + ylab("Miles per gallon")
+g = g + geom_point(size = 7, colour = "black", alpha=0.5)
+g = g + geom_point(size = 5, colour = "blue", alpha=0.2)
+g = g + geom_smooth(method = "lm", colour = "black")
+g
 ```
+
 
 6. Refer to question 4. Test the hypothesis of no linear relationship between horsepower and miles per gallon. 
 
+Recall: $SH = \beta_0 + \beta_1 * FH$
+
+* $H_0: \beta_1 = 0$
+* $H_a: \beta_1 \neq 0$
 
 ```{r}
-
+data("mtcars")
+fit <- lm(mpg ~ I(hp - mean(hp)), data=mtcars)
+summary(fit)$coef
 ```
 
 7. Refer to question 4. Predict the miles per gallon for a horsepower of 111. 
 
 
 ```{r}
+data("mtcars")
+fit <- lm(mpg ~ I(hp - mean(hp)), data=mtcars)
+predict(fit, newdata = data.frame(hp = 111))
+```
+
+
+
+## Regression
+
+1. Fit a linear regression model to the father.son dataset with the father as the predictor and the son as the outcome. Plot the son’s height (horizontal axis) versus the residuals (vertical axis). 
+
+```{r}
+data("father.son")
+fit <- lm(sheight ~ fheight, data=father.son)
 
 ```
 
+2. Refer to question 1. Directly estimate the residual variance and compare this estimate to the output of lm. 
+
+```{r}
+
+```
+
+3. Refer to question 1. Give the R squared for this model.
+
+```{r}
+
+```
+
+4. Load the mtcars dataset. Fit a linear regression with miles per gallon as the outcome and horsepower as the predictor. Plot horsepower versus the residuals. 
+
+```{r}
+
+```
+
+5. Refer to question 4. Directly estimate the residual variance and compare this estimate to the output of lm.
+
+```{r}
+
+```
+
+6. Refer to question 4. Give the R squared for this model.
+
+```{r}
+
+```
+
+
+## Regression inference
+
+1. Test whether the slope coefficient for the father.son data is different from zero (father as predictor, son as outcome). 
+
+```{r}
+
+```
+
+2. Refer to question 1. Form a confidence interval for the slope coefficient.
+
+```{r}
+
+```
+
+3. Refer to question 1. Form a confidence interval for the intercept (center the fathers’ heights first to get an intercept that is easier to interpret).
+
+```{r}
+
+```
+
+4. Refer to question 1. Form a mean value interval for the expected son’s height at the average father’s height.
+
+```{r}
+
+```
+
+5. Refer to question 1. Form a prediction interval for the son’s height at the average father’s height.
+
+```{r}
+
+```
+
+6. Load the mtcars dataset. Fit a linear regression with miles per gallon as the outcome and horsepower as the predictor. Test whether or not the horsepower power coefficient is statistically different from zero. Interpret your test.
+
+```{r}
+
+```
+
+7. Refer to question 6. Form a confidence interval for the slope coefficient.
+
+```{r}
+
+```
+
+8. Refer to quesiton 6. Form a confidence interval for the intercept (center the HP variable first).
+
+```{r}
+
+```
+
+9. Refer to question 6. Form a mean value interval for the expected MPG for the average HP.
+
+```{r}
+
+```
+
+10. Refer to question 6. Form a prediction interval for the expected MPG for the average HP.
+
+```{r}
+
+```
+
+11. Refer to question 6. Create a plot that has the fitted regression line plus curves at the expected value and prediction intervals.
+
+```{r}
+
+```
 
