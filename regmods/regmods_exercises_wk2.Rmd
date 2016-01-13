@@ -2,7 +2,7 @@
 title: "Regression Models Exercises - Week 2"
 author: "Shawn Rich"
 date: "January 12, 2016"
-output: html_document
+output: pdf_document
 ---
 
 ```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
@@ -117,19 +117,38 @@ predict(fit, newdata = data.frame(hp = 111))
 ```{r}
 data("father.son")
 fit <- lm(sheight ~ fheight, data=father.son)
+e <- residuals(fit)
+x <- father.son$sheight
 
+plot(x, e,  
+     xlab = "Son's Height", 
+     ylab = "Residuals", 
+     bg = "lightblue", 
+     col = "black", cex = 2, pch = 21,frame = FALSE)
+abline(h = 0, lwd = 2)
 ```
 
 2. Refer to question 1. Directly estimate the residual variance and compare this estimate to the output of lm. 
 
 ```{r}
-
+data("father.son")
+fit <- lm(sheight ~ fheight, data=father.son)
+n <- length(father.son$fheight)
+eRes <- sqrt(sum(resid(fit)^2) / (n - 2))
+eLM <- summary(fit)$sigma
+c(eRes,eLM)
 ```
 
 3. Refer to question 1. Give the R squared for this model.
 
 ```{r}
-
+data("father.son")
+fit <- lm(sheight ~ fheight, data=father.son)
+y <- father.son$sheight
+yhat <- predict(fit)
+ybar <- mean(y)
+rsquared <- sum((yhat - ybar)^2) / sum((y - ybar)^2)
+c(rsquared,summary(fit)$r.squared)
 ```
 
 4. Load the mtcars dataset. Fit a linear regression with miles per gallon as the outcome and horsepower as the predictor. Plot horsepower versus the residuals. 
