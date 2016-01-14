@@ -10,7 +10,7 @@ library(ggplot2)
 library(UsingR)
 data("galton")
 data("father.son")
-
+data("mtcars")
 ```
 
 
@@ -154,19 +154,41 @@ c(rsquared,summary(fit)$r.squared)
 4. Load the mtcars dataset. Fit a linear regression with miles per gallon as the outcome and horsepower as the predictor. Plot horsepower versus the residuals. 
 
 ```{r}
+data("mtcars")
+y <- mtcars$mpg
+x <- mtcars$hp
+fit <- lm(y ~ x)
+e <- residuals(fit)
 
+plot(x, e,  
+     xlab = "Horsepower", 
+     ylab = "Residuals", 
+     bg = "lightblue", 
+     col = "black", cex = 2, pch = 21,frame = FALSE)
+abline(h = 0, lwd = 2)
 ```
 
 5. Refer to question 4. Directly estimate the residual variance and compare this estimate to the output of lm.
 
 ```{r}
-
+data("mtcars")
+fit <- lm(mpg ~ hp, data=mtcars)
+n <- length(mtcars$hp)
+eRes <- sqrt(sum(residuals(fit)^2) / (n - 2))
+eLM <- summary(fit)$sigma
+c(eRes,eLM)
 ```
 
 6. Refer to question 4. Give the R squared for this model.
 
 ```{r}
-
+data("mtcars")
+fit <- lm(mpg ~ hp, data=mtcars)
+y <- mtcars$mpg
+yhat <- predict(fit)
+ybar <- mean(y)
+rsquared <- sum((yhat - ybar)^2) / sum((y - ybar)^2)
+c(rsquared,summary(fit)$r.squared)
 ```
 
 
