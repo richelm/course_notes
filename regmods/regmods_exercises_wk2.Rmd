@@ -2,7 +2,7 @@
 title: "Regression Models Exercises - Week 2"
 author: "Shawn Rich"
 date: "January 12, 2016"
-output: pdf_document
+output: html_document
 ---
 
 ```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
@@ -74,14 +74,27 @@ summary(fit)$coef
 
 5. Refer to question 4. Overlay the fit onto a scatterplot.
 
-```{r, echo = FALSE, fig.height=5,fig.width=5}
+Without regressor (hp) centered.
+
+```{r, echo = TRUE, fig.height=5,fig.width=5}
 data("mtcars")
-g = ggplot(mtcars, aes(x = mpg, y = (hp - mean(hp))))
-g = g + xlab("Horsepower")
-g = g + ylab("Miles per gallon")
+g = ggplot(mtcars, aes(x = hp, y = mpg))
+g = g + geom_point(cex = 5, alpha = .5)
 g = g + geom_point(size = 7, colour = "black", alpha=0.5)
 g = g + geom_point(size = 5, colour = "blue", alpha=0.2)
-g = g + geom_smooth(method = "lm", colour = "black")
+g = g + geom_smooth(method = "lm", se=FALSE, lwd=2)
+g
+```
+
+With regressor (hp) centered.
+
+```{r, echo = TRUE, fig.height=5,fig.width=5}
+data("mtcars")
+g = ggplot(mtcars, aes(x = (hp - mean(hp)), y = mpg))
+g = g + geom_point(cex = 5, alpha = .5)
+g = g + geom_point(size = 7, colour = "black", alpha=0.5)
+g = g + geom_point(size = 5, colour = "blue", alpha=0.2)
+g = g + geom_smooth(method = "lm", se=FALSE, lwd=2)
 g
 ```
 
@@ -93,6 +106,8 @@ Recall: $SH = \beta_0 + \beta_1 * FH$
 * $H_0: \beta_1 = 0$
 * $H_a: \beta_1 \neq 0$
 
+We reject the null hypothesis.
+
 ```{r}
 data("mtcars")
 fit <- lm(mpg ~ I(hp - mean(hp)), data=mtcars)
@@ -101,13 +116,38 @@ summary(fit)$coef
 
 7. Refer to question 4. Predict the miles per gallon for a horsepower of 111. 
 
+Without regressor (hp) centered.
 
 ```{r}
 data("mtcars")
-fit <- lm(mpg ~ I(hp - mean(hp)), data=mtcars)
-predict(fit, newdata = data.frame(hp = 111))
+fit <- lm(mpg ~ hp, data=mtcars)
+
+# manaul method
+b0 <- summary(fit)$coef[1]
+b1 <- summary(fit)$coef[2]
+pm1 <- b0 + b1*111
+
+pm2 <- predict(fit, newdata = data.frame(hp = 111))
+c(b0, b1, pm1, pm2)
 ```
 
+With regressor (hp) centered.
+
+```{r}
+data("mtcars")
+hp <- mtcars$hp - mean(mtcars$hp)
+mpg <- mtcars$mpg
+fit <- lm(mpg ~ hp)
+
+# manaul method
+b0 <- summary(fit)$coef[1]
+b1 <- summary(fit)$coef[2]
+pm1 <- b0 + b1*111
+
+# with predict
+pm2 <- predict(fit, newdata = data.frame(hp = 111))
+c(b0, b1, pm1, pm2)
+```
 
 
 ## Regression
@@ -196,32 +236,59 @@ c(rsquared,summary(fit)$r.squared)
 
 1. Test whether the slope coefficient for the father.son data is different from zero (father as predictor, son as outcome). 
 
-```{r}
+With P value of 2.2e-16 we reject null hypothesis $H_0: \beta_1 = 0$ in favor of alternate $H_a = \beta_1 \neq 0$.
 
+```{r}
+summary(lm(sheight ~ fheight, data=father.son))$p-value
 ```
 
 2. Refer to question 1. Form a confidence interval for the slope coefficient.
 
 ```{r}
+# easy way
+fit <- lm(sheight ~ fheight, data = father.son)
+confint(fit)
+
+# manual way
+sumCoef <- summary(fit)$coefficients
+# intercept
+sumCoef[1,1] + c(-1, 1) * qt(.975, df = fit$df) * sumCoef[1, 2]
+# slope
+sumCoef[2,1] + c(-1, 1) * qt(.975, df = fit$df) * sumCoef[2, 2]
 
 ```
+
 
 3. Refer to question 1. Form a confidence interval for the intercept (center the fathers’ heights first to get an intercept that is easier to interpret).
 
 ```{r}
-
+fit <- lm(sheight ~ I(fheight - mean(fheight)), data=father.son)
+# easy way
+confint(fit)
+sumCoef <- summary(fit)$coefficients
+# manual way
+# intercept
+sumCoef[1,1] + c(-1, 1) * qt(.975, df = fit$df) * sumCoef[1, 2]
+# slope
+sumCoef[2,1] + c(-1, 1) * qt(.975, df = fit$df) * sumCoef[2, 2]
 ```
 
 4. Refer to question 1. Form a mean value interval for the expected son’s height at the average father’s height.
 
 ```{r}
-
+fit <- lm(sheight ~ I(fheight - mean(fheight)), data=father.son)
+m <- mean(father.son$fheight)
+# "confidence" is the mean value interval
+predict(fit, newdata = data.frame(fheight=m), interval = "confidence")
 ```
 
 5. Refer to question 1. Form a prediction interval for the son’s height at the average father’s height.
 
 ```{r}
-
+fit <- lm(sheight ~ I(fheight - mean(fheight)), data=father.son)
+m <- mean(father.son$fheight)
+# "confidence" is the mean value interval
+predict(fit, newdata = data.frame(fheight=m), interval = "prediction")
 ```
 
 6. Load the mtcars dataset. Fit a linear regression with miles per gallon as the outcome and horsepower as the predictor. Test whether or not the horsepower power coefficient is statistically different from zero. Interpret your test.
