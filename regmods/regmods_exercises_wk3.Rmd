@@ -1,0 +1,56 @@
+---
+title: "Regression Models Exercises - Week 3"
+author: "Shawn Rich"
+date: "January 18, 2016"
+output: html_document
+---
+
+```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(ggplot2)
+library(UsingR)
+library(datasets)
+library(dplyr)
+data("galton")
+data("father.son")
+data("mtcars")
+data("Seatbelts")
+```
+
+
+## Multivariable regression analysis
+
+**1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms and PetrolPrice as predictors. Interpret your results.**
+
+```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+head(seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+
+fit <- lm(DriversKilled ~ mmc + pp, data = seatbelts)
+summary(fit)$coef
+```
+
+
+**2. Predict the number of driver deaths at the average kms and petrol levels.**
+
+```{r}
+```
+
+
+**3. Take the residual for DriversKilled having regressed out kms and an intercept Watch a video solution. and the residual for PetrolPrice having regressed out kms and an intercept. Fit a regression through the origin of the two residuals and show that it is the same as your coefficient obtained in question 1.**
+
+```{r}
+```
+
+
+**4. Take the residual for DriversKilled having regressed out PetrolPrice and an intercept. Take the residual for kms having regressed out PetrolPrice and an intercept. Fit a regression through the origin of the two residuals and show that it is the same as your coefficient obtained in question 1.**
+
+```{r}
+```
+
+
