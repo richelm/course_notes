@@ -39,6 +39,15 @@ summary(fit)$coef
 **2. Predict the number of driver deaths at the average kms and petrol levels.**
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+fit <- lm(DriversKilled ~ mmc + pp, data = seatbelts)
+predict(fit, )
 ```
 
 
@@ -53,4 +62,80 @@ summary(fit)$coef
 ```{r}
 ```
 
+
+## Multivariable examples and tricks
+
+**1. Do exercise 1 of the previous chapter if you have not already. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms and PetrolPrice as predictors. Interpret your results.**
+
+```{r}
+```
+
+**2. Repeat question 1 for the outcome being the log of the count of driver deaths. Interpret your coefficients. **
+
+```{r}
+```
+
+**3. Refer to question 1. Add the dummy variable law and interpret the results. Repeat this question with a factor variable that you create called lawFactor that takes the levels No and Yes. Change the reference level from No to Yes.**
+
+```{r}
+```
+
+**4. Discretize the PetrolPrice variable into four factor levels. Fit the linear model with this factor to see how R treats multiple level factor variables. **
+
+```{r}
+```
+
+**5. Perform the plot requested at the end of the last chapter.**
+
+```{r}
+```
+
+
+## Adjustment
+
+**1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms and PetrolPrice as predictors. Interpret your results.**
+
+```{r}
+```
+
+**2. Compare the kms coefficient with and without the inclusion of the PetrolPrice variable in the model.**
+
+```{r}
+```
+
+**3. Compare the PetrolPrice coefficient with and without the inclusion fo the kms variable in the model.**
+
+```{r}
+```
+
+
+## Residuals, variation, diagnostics
+
+**1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms, PetrolPrice and law as predictors.**
+
+```{r}
+```
+
+**2. Refer to question 1. Directly estimate the residual variation via the function resid. Compare with R’s residual variance estimate.**
+
+```{r}
+```
+
+**3. Refer to question 1. Perform an analysis of diagnostic measures including, dffits, dfbetas, influence and hat diagonals.**
+
+```{r}
+```
+
+
+## Multiple variables and model selection
+
+**1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms, PetrolPrice and law as predictors.**
+
+```{r}
+```
+
+**2. Perform a model selection exercise to arrive at a final model.**
+
+```{r}
+```
 
