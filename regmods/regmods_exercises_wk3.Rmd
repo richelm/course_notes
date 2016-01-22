@@ -226,11 +226,11 @@ summary(fit)$sigma^2
 ```{r}
 
 
-plot(dffits(fit))
+#plot(dffits(fit))
 
-plot(dfbetas(fit))
-plot(influence(fit))
-hatvalues(fit)
+#plot(dfbetas(fit))
+#plot(influence(fit))
+#hatvalues(fit)
 ```
 
 
