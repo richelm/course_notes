@@ -24,7 +24,7 @@ data("Seatbelts")
 ```{r}
 data("Seatbelts")
 seatbelts <- as.data.frame(Seatbelts)
-head(seatbelts)
+#head(seatbelts)
 # normalize PetroPrice and mean center kms
 seatbelts <- mutate(seatbelts,
                     pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
@@ -41,25 +41,41 @@ summary(fit)$coef
 ```{r}
 data("Seatbelts")
 seatbelts <- as.data.frame(Seatbelts)
-# normalize PetroPrice and mean center kms
-seatbelts <- mutate(seatbelts,
-                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
-                    mm = kms/ 1000,
-                    mmc = mm - mean(mm))
-fit <- lm(DriversKilled ~ mmc + pp, data = seatbelts)
-predict(fit, )
+head(seatbelts)
+fit <- lm(DriversKilled ~ kms + PetrolPrice, data = seatbelts)
+predict(fit, newdata = data.frame(kms = mean(seatbelts$kms), 
+                                             PetrolPrice = mean(seatbelts$PetrolPrice)))
 ```
 
 
-**3. Take the residual for DriversKilled having regressed out kms and an intercept Watch a video solution. and the residual for PetrolPrice having regressed out kms and an intercept. Fit a regression through the origin of the two residuals and show that it is the same as your coefficient obtained in question 1.**
+**3. Take the residual for DriversKilled having regressed out kms and an intercept and the residual for PetrolPrice having regressed out kms and an intercept. Fit a regression through the origin of the two residuals and show that it is the same as your coefficient obtained in question 1.**
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+dk <- seatbelts$DriversKilled
+kms <- seatbelts$kms
+pp <- seatbelts$PetrolPrice
+fitFull <- lm(dk ~ kms + pp)
+# regress out kms from drivers killed and get residuals
+edk <- resid(lm(dk ~ kms))
+# regress out kms from petrol price killed and get residuals
+epp <- resid(lm(pp ~ kms))
+
+summary(lm(edk ~ epp -1))$coef
+summary(fitFull)$coef
 ```
 
 
 **4. Take the residual for DriversKilled having regressed out PetrolPrice and an intercept. Take the residual for kms having regressed out PetrolPrice and an intercept. Fit a regression through the origin of the two residuals and show that it is the same as your coefficient obtained in question 1.**
 
 ```{r}
+# regress Petrol Price from Drivers Killed and kms 
+# and compare this to fitFull summary
+edk <- resid(lm(dk ~ pp))
+ekms <- resid(lm(kms ~ pp))
+summary(lm(edk ~ ekms - 1))$coef
+summary(fitFull)$coef
 ```
 
 
@@ -68,21 +84,67 @@ predict(fit, )
 **1. Do exercise 1 of the previous chapter if you have not already. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms and PetrolPrice as predictors. Interpret your results.**
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+#head(seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+
+fit <- lm(DriversKilled ~ pp + mmc, data = seatbelts)
+summary(fit)$coef
 ```
 
 **2. Repeat question 1 for the outcome being the log of the count of driver deaths. Interpret your coefficients. **
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+#head(seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+
+fit <- lm(I(log(DriversKilled)) ~ pp + mmc, data = seatbelts)
+summary(fit)$coef
 ```
 
 **3. Refer to question 1. Add the dummy variable law and interpret the results. Repeat this question with a factor variable that you create called lawFactor that takes the levels No and Yes. Change the reference level from No to Yes.**
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+#head(seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+
+fit <- lm(DriversKilled ~ pp + mmc + law, data = seatbelts)
+summary(fit)$coef
+fit <- lm(DriversKilled ~ pp + mmc + I(factor(law)), data = seatbelts)
+summary(fit)$coef
 ```
 
 **4. Discretize the PetrolPrice variable into four factor levels. Fit the linear model with this factor to see how R treats multiple level factor variables. **
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+#head(seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    ppf = as.factor((pp<=-1.5)+(pp<=0)+(pp<=1.5)+(pp<Inf)),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+fit <- lm(DriversKilled ~ ppf + kms + law, data=seatbelts)
+summary(fit)$coef
 ```
 
 **5. Perform the plot requested at the end of the last chapter.**
@@ -96,16 +158,39 @@ predict(fit, )
 **1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms and PetrolPrice as predictors. Interpret your results.**
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+fit <- lm(DriversKilled ~ pp + mmc, data=seatbelts)
+summary(fit)$coef
 ```
 
 **2. Compare the kms coefficient with and without the inclusion of the PetrolPrice variable in the model.**
 
 ```{r}
+fit0 <- lm(DriversKilled ~ mmc, data=seatbelts)
+fit1 <- lm(DriversKilled ~ mmc + pp, data=seatbelts)
+cor(seatbelts$pp,seatbelts$mmc)
+summary(fit0)$coef
+summary(fit1)$coef
+# additional look at anova of the fits
+anova(fit0, fit1)
 ```
 
 **3. Compare the PetrolPrice coefficient with and without the inclusion fo the kms variable in the model.**
 
 ```{r}
+fit0 <- lm(DriversKilled ~ pp, data=seatbelts)
+fit1 <- lm(DriversKilled ~ pp + mmc, data=seatbelts)
+cor(seatbelts$pp,seatbelts$mmc)
+summary(fit0)$coef
+summary(fit1)$coef
+# additional look at anova of the fits
+anova(fit0, fit1)
 ```
 
 
@@ -114,16 +199,38 @@ predict(fit, )
 **1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a linear model of driver deaths with kms, PetrolPrice and law as predictors.**
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+#head(seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+
+fit <- lm(DriversKilled ~ mmc + pp + law, data = seatbelts)
 ```
 
 **2. Refer to question 1. Directly estimate the residual variation via the function resid. Compare with R’s residual variance estimate.**
 
 ```{r}
+sum(resid(fit)^2) / (nrow(seatbelts) - 4)
+summary(fit)$sigma^2
+# is variance same with original kms and PetrolPrice?
+fit2 <- lm(DriversKilled ~ kms + PetrolPrice + law, data = seatbelts)
+summary(fit)$sigma^2
 ```
 
 **3. Refer to question 1. Perform an analysis of diagnostic measures including, dffits, dfbetas, influence and hat diagonals.**
 
 ```{r}
+
+
+plot(dffits(fit))
+
+plot(dfbetas(fit))
+plot(influence(fit))
+hatvalues(fit)
 ```
 
 
@@ -137,5 +244,15 @@ predict(fit, )
 **2. Perform a model selection exercise to arrive at a final model.**
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+#head(seatbelts)
+# normalize PetroPrice and mean center kms
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+
+fit <- lm(DriversKilled ~ mmc + pp + law, data = seatbelts)
 ```
 
