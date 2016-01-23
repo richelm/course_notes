@@ -32,10 +32,11 @@ summary(uafit)
 ## 3. 
 
 ```{r}
-fit3a <- lm(mpg ~ I(factor(cyl)), data=mtcars)
-fit3b <- lm(mpg ~ I(factor(cyl)) + wt, data=mtcars)
-anova(fit3a,fit3b)
-summary(afit)
+cfit <- lm(mpg ~ I(factor(cyl)) + wt, data=mtcars)
+ifit <- lm(mpg ~ I(factor(cyl))*wt, data=mtcars)
+anova(cfit, ifit)
+summary(cfit)
+summary(ifit)
 
 ```
 
