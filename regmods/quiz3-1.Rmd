@@ -1,0 +1,78 @@
+---
+title: "Quiz3-1"
+author: "Shawn Rich"
+date: "January 23, 2016"
+output: html_document
+---
+
+# Regreesion Models Quiz 3
+
+library(UsingR)
+data("mtcars")
+
+## 1.
+```{r}
+fit <- lm(mpg ~ I(factor(cyl)) + wt, data=mtcars)
+summary(fit)
+```
+
+
+## 2.
+```{r}
+# adjusted fit includes weight variable
+afit <- lm(mpg ~ I(factor(cyl)) + wt, data=mtcars)
+summary(afit)
+
+# unadjusted fit does not include weight variable
+uafit <- lm(mpg ~ I(factor(cyl)), data=mtcars)
+summary(uafit)
+```
+
+
+## 3. 
+
+```{r}
+fit3a <- lm(mpg ~ I(factor(cyl)), data=mtcars)
+fit3b <- lm(mpg ~ I(factor(cyl)) + wt, data=mtcars)
+anova(fit3a,fit3b)
+summary(afit)
+
+```
+
+
+## 4. 
+
+```{r}
+fit4 <- lm(mpg ~ I(wt * 0.5) + factor(cyl), data = mtcars)
+summary(fit4)
+```
+
+
+## 5. 
+
+```{r}
+x <- c(0.586, 0.166, -0.042, -0.614, 11.72)
+y <- c(0.549, -0.026, -0.127, -0.751, 1.344)
+
+fit5 <- lm(y ~ x)
+summary(fit5)
+hatvalues(fit5)
+
+```
+
+
+## 6. 
+
+```{r}
+x <- c(0.586, 0.166, -0.042, -0.614, 11.72)
+y <- c(0.549, -0.026, -0.127, -0.751, 1.344)
+fit6 <- lm(y ~ x)
+dfbetas(fit6)
+```
+
+
+## 7. 
+
+```{r}
+
+```
