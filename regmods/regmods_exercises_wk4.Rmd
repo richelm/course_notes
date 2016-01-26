@@ -1,4 +1,9 @@
-# Regmods Week 4 Problem Set
+---
+title: "Regression Models Exercises - Week 4"
+author: "Shawn Rich"
+date: "January 18, 2016"
+output: pdf_document
+---
 
 
 ## Generalized Linear Models
