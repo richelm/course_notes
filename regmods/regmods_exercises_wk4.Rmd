@@ -78,13 +78,32 @@ round(summary(fit)$coef, 3)
 2. Fit a binomial model with DriversKilled as the outcome and drivers as the total count with kms , PetrolPrice and law as predictors, interpret your results.
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
 
+fit <- glm(DriversKilled ~ drivers + mmc + pp + law, data = seatbelts)
+round(summary(fit)$coef, 3)
 ```
 
 3. Refer to Question 1. Use the anova function to compare models with just law, law and PetrolPrice and all three predictors. 
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm),
+                    dkb = ifelse(DriversKilled > 119, 1, 0))
 
+fit1 <- glm(dkb ~ law, family = "binomial", data = seatbelts)
+fit2 <- glm(dkb ~ law + pp, family = "binomial", data = seatbelts)
+fit3 <- glm(dkb ~ law + pp + mmc, family = "binomial", data = seatbelts)
+anova(fit1, fit2, fit3)
 ```
 
 
