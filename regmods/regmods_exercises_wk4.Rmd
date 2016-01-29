@@ -5,10 +5,21 @@ date: "January 18, 2016"
 output: pdf_document
 ---
 
-
+```{r echo=FALSE, results="hide", warning=FALSE, message=FALSE}
+library(ggplot2)
+library(UsingR)
+library(datasets)
+library(dplyr)
+data("galton")
+data("father.son")
+data("mtcars")
+data("Seatbelts")
+```
 ## Generalized Linear Models
 
 1. True or false, generalized linear models transform the observed outcome.
+
+False. 
 
 ```{r}
 
@@ -17,12 +28,16 @@ output: pdf_document
 
 2. True or false, the interpretation of the coefficients in a GLM are on the scale of the link function. (Discuss.)
 
+True.
+
 ```{r}
 
 ```
 
 
 3. True or false, the generalized linear model assumes an exponential family for the outcome. (Discuss.)
+
+True.
 
 ```{r}
 
@@ -48,7 +63,16 @@ output: pdf_document
 1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Create a new outcome variable for whether or not greater than 119 drivers were killed that month. Fit a logistic regression GLM with this variable as the outcome and kms, PetrolPrice and law as predictors. Interpret your parameters. 
 
 ```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm),
+                    dkb = ifelse(DriversKilled > 119, 1, 0))
 
+fit <- glm(dkb ~ mmc + pp + law, family = "binomial", data = seatbelts)
+round(summary(fit)$coef, 3)
 ```
 
 2. Fit a binomial model with DriversKilled as the outcome and drivers as the total count with kms , PetrolPrice and law as predictors, interpret your results.
