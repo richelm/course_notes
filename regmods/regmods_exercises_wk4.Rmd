@@ -111,9 +111,59 @@ anova(fit1, fit2, fit3)
 
 1. Load the dataset Seatbelts as part of the datasets package via data(Seatbelts). Use as.data.frame to convert the object to a dataframe. Fit a Poisson regression GLM with UKDriversKilled as the outcome and kms, PetrolPrice and law as predictors. Interpret your results.
 
+```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+fit <- glm(DriversKilled ~ mmc + pp + law, family = "poisson", data = seatbelts)
+summary(fit)
+```
+
+
 2. Refer to question 1. Fit a linear model with the log of drivers killed as the outcome. Interpret your results.
+
+```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+fit <- lm(I(log(DriversKilled)) ~ mmc + pp + law, data = seatbelts)
+summary(fit)
+
+```
+
 
 3. Refer to question 1. Fit your Poisson log-linear model with drivers as a log offset (to consider the proportion of drivers killed of those killed or seriously injured.)
 
+```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+fit0 <- glm(DriversKilled ~  pp + mmc + law, family = "poisson", data = seatbelts)
+fit <- glm(DriversKilled ~  pp + mmc + law, family = "poisson", data = seatbelts, offset = log(drivers))
+summary(fit0)$coef
+summary(fit)$coef
+```
+
 4. Refer to Question 1. Use the anova function to compare models with just law, law and PetrolPrice and all three predictors.
 
+```{r}
+data("Seatbelts")
+seatbelts <- as.data.frame(Seatbelts)
+seatbelts <- mutate(seatbelts,
+                    pp = (PetrolPrice - mean(PetrolPrice)) / sd(PetrolPrice),
+                    mm = kms/ 1000,
+                    mmc = mm - mean(mm))
+fit1 <- glm(DriversKilled ~ law, family = "poisson", data = seatbelts)
+fit2 <- glm(DriversKilled ~ law + pp, family = "poisson", data = seatbelts)
+fit3 <- glm(DriversKilled ~ law + pp + mmc, family = "poisson", data = seatbelts)
+anova(fit1, fit2, fit3)
+```
