@@ -13,17 +13,17 @@ data("mtcars")
 
 ## Synopsis
 
-In this report I will use the mtcars dataset to examine the relationship among the variables in the data and miles per gallon (MPG) as outcome. Specifically I will address whether the an automatic or manual transmission results in better gas milage for the car. To this end I will quantify the MPG difference between automatic and manual transmissions.
+This report, using the the mtcars dataset, examines the relationship among the variables in the dataset and miles per gallon (MPG) as outcome. Specifically addressed is  whether the an automatic or manual transmission results in better gas milage.
 
 ## Executive Summary
 
 
 ## Data Exploration
 
-Before building models and analysis we need an understanding of the data. Appendix A list the variables in the dataset with their descriptions and the first rows of the dataset. Next we see if a null hypothesis is true. Specifically is the difference of the mean mpg of automatic vs manual equal zero? Visually we can see this in the boxplot. The t-test, with p-value of 0.0014, gives us more confidence that we can reject the null in favor the alternate hypothesis. There is a diffence in mile per gallon. 
+Before building models and analysis we need an understanding of the data. Appendix A list the variables in the dataset with their descriptions and the first rows of the dataset. Next we see if a null hypothesis is true. Specifically is the difference of the mean mpg of automatic vs manual equal to zero? Visually we can see this in the boxplot. The t-test, with p-value of 0.0014, gives us more confidence that we can reject the null in favor the alternate hypothesis. There is a diffence in mile per gallon. The next step then is to develop a model of these data. 
 
 
-## Data Analysis
+## Data Model
 
 First we look at the correlation among all variables against *mpg* to see which should be included in our model. From the correlation matrix we that *cyl*, *disp*, *hp*, and *wt* are highly correlated with mgp. There is also a high correlation of `r cor(mtcars$disp, mtcars$cyl)` between *disp* and *cyl*, which mean we may not want to inlcude both. This correlation make intuitive sense, because more cyclinders the more overall displacement an engine would have.
 
@@ -54,15 +54,6 @@ head(mtcars)
 
 ## Apendix B - Detail Data Exploration
 
-**Data Cleanup**
-
-```{r}
-# convert am 0,1 values to factor variables auto, manual respectively
-#mtcars$am <- as.factor(mtcars$am)
-#levels(mtcars$am) <-c("auto", "manual")
-```
-
-
 **Boxplot MPG vs Tranmission Type**
 
 ```{r fig.width=5, fig.height = 6}
@@ -81,11 +72,11 @@ t.test(mpg.auto, mpg.manual)
 ```
 
 
-## Appendix C - Detail Analysis
+## Appendix C - Data Model Selection
 
 **Correlation of Variables**
 
-Variables *cyl*, *disp*, *hp*, and *wt* are highly correlated with mgp. The high correlation between *disp* and *cyl*, means we may not want to inlcude both of these. 
+Variables *cyl*, *disp*, *hp*, and *wt* are highly correlated with mgp. The high correlation between *disp* and *cyl* indicates that those two should be examined and determine if both should be included. 
 
 ```{r}
 cor(mtcars)[1,]
@@ -94,24 +85,28 @@ cor(mtcars$disp, mtcars$cyl)
 
 **The Models**
 
-```{r}
-fit1 <- lm(mpg ~ am, data = mtcars)
-fit2 <- lm(mpg ~ am + hp, data = mtcars)
-fit3 <- lm(mpg ~ am + hp + wt, data = mtcars)
-fit4 <- lm(mpg ~ am + hp + wt + cyl, data = mtcars)
-fit5 <- lm(mpg ~ am + hp + wt + disp, data = mtcars)
-anova(fit1, fit2, fit3, fit4)
-anova(fit1, fit2, fit3, fit5)
-summary(fit1)$coef[2,]
+Five nested models are created below. These are:
 
-summary(fit5)$coef
+Model 1: mpg ~ am
+Model 2: mpg ~ am + hp
+Model 3: mpg ~ am + hp + wt
+Model 4: mpg ~ am + hp + wt + cyl
+Model 5: mpg ~ am + hp + wt + disp
+
+Models 4 and 5 are used to see if adding either *cyl* or *disp* is necessary. ANOVA test are done to compare the models and help make our model selection.
+
+```{r}
+model1 <- lm(mpg ~ am, data = mtcars)
+model2 <- lm(mpg ~ am + hp, data = mtcars)
+model3 <- lm(mpg ~ am + hp + wt, data = mtcars)
+model4 <- lm(mpg ~ am + hp + wt + cyl, data = mtcars)
+model5 <- lm(mpg ~ am + hp + wt + disp, data = mtcars)
+anova(model1, model2, model3, model4)
+anova(model1, model2, model3, model5)
 ```
 
-**Simple Model Fit**
-
-The simple_model uses just mpg as outcome and am as predictor.
+From both ANOVA test the p-values indicate that adding *hp* and *wt* is necessary. Both having p-values less than 0.05. However, both *cyl* and *disp* have high p-values (> 0.05) indicating that neither is necessary in the models. The final model then is model 3 inlcuding mpg *am*, *hp*, and *wt* predictors and *mpg* as outcome.
 
 ```{r}
-simple_model <- lm(mpg ~ am, data = mtcars)
-summary(simple_model)$coef
+summary(model3)
 ```
