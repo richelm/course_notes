@@ -2,7 +2,7 @@
 title: "Relationship of Variables and Miles Per Gallon"
 author: "Shawn Rich"
 date: "January 26, 2016"
-output: html_document
+output: pdf_document
 ---
 
 ```{r warning=FALSE, echo=FALSE, error=FALSE, message=FALSE}
@@ -11,19 +11,23 @@ library(UsingR)
 data("mtcars")
 ```
 
-## Summary
+## Synopsis
 
 In this report I will use the mtcars dataset to examine the relationship among the variables in the data and miles per gallon (MPG) as outcome. Specifically I will address whether the an automatic or manual transmission results in better gas milage for the car. To this end I will quantify the MPG difference between automatic and manual transmissions.
 
+## Executive Summary
+
+
 ## Data Exploration
 
-Before building models and analysis we need an understanding of the data. Appendix A list the variables in the dataset with their descriptions and the first rows of the dataset. We now know what the variables mean and what type of data they contain.
+Before building models and analysis we need an understanding of the data. Appendix A list the variables in the dataset with their descriptions and the first rows of the dataset. Next we see if a null hypothesis is true. Specifically is the difference of the mean mpg of automatic vs manual equal zero? Visually we can see this in the boxplot. The t-test, with p-value of 0.0014, gives us more confidence that we can reject the null in favor the alternate hypothesis. There is a diffence in mile per gallon. 
 
-```{r}
-head(mtcars)
-```
 
-## Appendix A - MTCARS Dataset Description
+## Data Analysis
+
+
+
+## Appendix A - Detail Data Exploration
 
 The MTCARS variables and their descriptions.
 
@@ -47,11 +51,35 @@ The first 10 rows of the dataset to get a overall view of the data.
 head(mtcars)
 ```
 
+## Apendix B - Detail Data Exploration
 
-## Appendic B - MPG vs Transmisstion Type Plot
+**Data Cleanup**
 
 ```{r}
+# convert am 0,1 values to factor variables auto, manual respectively
+mtcars$am <- as.factor(mtcars$am)
+levels(mtcars$am) <-c("auto", "manual")
+```
+
+**Simple Model Fit**
+
+The simple_model uses just mpg as outcome and am as predictor.
+
+```{r}
+simple_model <- lm(mpg ~ am, data = mtcars)
+summary(simple_model)$coef
+confint(simple_model)
+```
+
+```{r fig.width=5, fig.height = 6}
 boxplot(mpg ~ am, data=mtcars, xlab="Transmission Type",
 ylab="Miles per Gallon",
 main="Automatic versus Manual Transmission MPG")
+```
+
+```{r}
+mpg.auto <- mtcars[mtcars$am == "auto",]$mpg
+mpg.manual <- mtcars[mtcars$am == "manual",]$mpg
+
+t.test(mpg.auto, mpg.manual)
 ```
