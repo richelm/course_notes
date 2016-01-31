@@ -2,7 +2,7 @@
 title: "Relationship of Variables and Miles Per Gallon"
 author: "Shawn Rich"
 date: "January 26, 2016"
-output: pdf_document
+output: html_document
 ---
 
 ```{r warning=FALSE, echo=FALSE, error=FALSE, message=FALSE}
@@ -25,11 +25,12 @@ Before building models and analysis we need an understanding of the data. Append
 
 ## Data Analysis
 
+First we look at the correlation among all variables against *mpg* to see which should be included in our model. From the correlation matrix we that *cyl*, *disp*, *hp*, and *wt* are highly correlated with mgp. There is also a high correlation of `r cor(mtcars$disp, mtcars$cyl)` between *disp* and *cyl*, which mean we may not want to inlcude both. This correlation make intuitive sense, because more cyclinders the more overall displacement an engine would have.
 
 
 ## Appendix A - Detail Data Exploration
 
-The MTCARS variables and their descriptions.
+The MTCARS dataset variables and their descriptions.
 
 ~~~~~
 mpg         Miles/(US) gallon  
@@ -57,8 +58,53 @@ head(mtcars)
 
 ```{r}
 # convert am 0,1 values to factor variables auto, manual respectively
-mtcars$am <- as.factor(mtcars$am)
-levels(mtcars$am) <-c("auto", "manual")
+#mtcars$am <- as.factor(mtcars$am)
+#levels(mtcars$am) <-c("auto", "manual")
+```
+
+
+**Boxplot MPG vs Tranmission Type**
+
+```{r fig.width=5, fig.height = 6}
+boxplot(mpg ~ am, data=mtcars, xlab="Transmission Type",
+ylab="Miles per Gallon",
+main="Automatic versus Manual Transmission MPG")
+```
+
+**T-Test**
+
+```{r}
+mpg.auto <- mtcars[mtcars$am == 0,]$mpg
+mpg.manual <- mtcars[mtcars$am == 1,]$mpg
+
+t.test(mpg.auto, mpg.manual)
+```
+
+
+## Appendix C - Detail Analysis
+
+**Correlation of Variables**
+
+Variables *cyl*, *disp*, *hp*, and *wt* are highly correlated with mgp. The high correlation between *disp* and *cyl*, means we may not want to inlcude both of these. 
+
+```{r}
+cor(mtcars)[1,]
+cor(mtcars$disp, mtcars$cyl)
+```
+
+**The Models**
+
+```{r}
+fit1 <- lm(mpg ~ am, data = mtcars)
+fit2 <- lm(mpg ~ am + hp, data = mtcars)
+fit3 <- lm(mpg ~ am + hp + wt, data = mtcars)
+fit4 <- lm(mpg ~ am + hp + wt + cyl, data = mtcars)
+fit5 <- lm(mpg ~ am + hp + wt + disp, data = mtcars)
+anova(fit1, fit2, fit3, fit4)
+anova(fit1, fit2, fit3, fit5)
+summary(fit1)$coef[2,]
+
+summary(fit5)$coef
 ```
 
 **Simple Model Fit**
@@ -68,18 +114,4 @@ The simple_model uses just mpg as outcome and am as predictor.
 ```{r}
 simple_model <- lm(mpg ~ am, data = mtcars)
 summary(simple_model)$coef
-confint(simple_model)
-```
-
-```{r fig.width=5, fig.height = 6}
-boxplot(mpg ~ am, data=mtcars, xlab="Transmission Type",
-ylab="Miles per Gallon",
-main="Automatic versus Manual Transmission MPG")
-```
-
-```{r}
-mpg.auto <- mtcars[mtcars$am == "auto",]$mpg
-mpg.manual <- mtcars[mtcars$am == "manual",]$mpg
-
-t.test(mpg.auto, mpg.manual)
 ```
