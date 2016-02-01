@@ -1,7 +1,7 @@
 ---
-title: "Relationship of Variables and Miles Per Gallon"
-author: "Shawn Rich"
-date: "January 26, 2016"
+title: "Analysis of Miles Per Gallon for Automatic vs Manual Transmissions"
+author: rich
+date: "January 31, 2016"
 output: html_document
 ---
 
@@ -11,26 +11,20 @@ library(UsingR)
 data("mtcars")
 ```
 
-## Synopsis
-
-This report, using the the mtcars dataset, examines the relationship among the variables in the dataset and miles per gallon (MPG) as outcome. Specifically addressed is  whether the an automatic or manual transmission results in better gas milage.
-
 ## Executive Summary
+
+This report, using the the mtcars data-set, examines the relationship among the variables in the data-set and miles per gallon (*mpg*) as outcome. Two main points addressed in this report are (1) whether an automatic or manual transmission results in better gas mileage and (2) what is difference in *mpg* between automatic and manual transmissions.
+
+Part of the data exploration was to determine if there is a difference in mean *mpg* for automatic and manual transmissions. A t-test shows that a null hypothesis of means being equal should be rejected. Further analysis was then justified. 
+
+Analysis started by finding other variables that are highly correlated with *mpg*. These are *cyl*, *disp*, *hp*, and *wt*. Variables *cyl* and *disp* were also found to be highly correlated with each other. Five nested models were created starting with *mpg ~ am* and then adding others individually. ANOVA was used to compare this models. During this comparison it was found the neither *cyl* or *disp* were necessary. The final model was *mpg ~ am + hp + wt*. This models shows that on average there is a **2.084** mile per gallon increase for a manual transmission over an automatic. The $R^2$ value shows the model explains 84% of the variation. Residual plot did not show aspects of poor model fit.
 
 
 ## Data Exploration
 
-Before building models and analysis we need an understanding of the data. Appendix A list the variables in the dataset with their descriptions and the first rows of the dataset. Next we see if a null hypothesis is true. Specifically is the difference of the mean mpg of automatic vs manual equal to zero? Visually we can see this in the boxplot. The t-test, with p-value of 0.0014, gives us more confidence that we can reject the null in favor the alternate hypothesis. There is a diffence in mile per gallon. The next step then is to develop a model of these data. 
+Before building models and analysis we need an understanding of the data. Below are listed the variables in the data-set with their descriptions and the first rows of the data-set. Next we see if a null hypothesis is true. Specifically is the difference of the mean mpg of automatic vs manual equal to zero? The t-test, with p-value of 0.0014, gives us confidence that we can reject the null in favour the alternate hypothesis that there is a difference in miles per gallon. The next step then is to develop a model of these data. 
 
-
-## Data Model
-
-First we look at the correlation among all variables against *mpg* to see which should be included in our model. From the correlation matrix we that *cyl*, *disp*, *hp*, and *wt* are highly correlated with mgp. There is also a high correlation of `r cor(mtcars$disp, mtcars$cyl)` between *disp* and *cyl*, which mean we may not want to inlcude both. This correlation make intuitive sense, because more cyclinders the more overall displacement an engine would have.
-
-
-## Appendix A - Detail Data Exploration
-
-The MTCARS dataset variables and their descriptions.
+**The MTCARS data-set variables and their descriptions.**
 
 ~~~~~
 mpg         Miles/(US) gallon  
@@ -46,23 +40,23 @@ gear        Number of forward gears
 carb        Number of carburetors  
 ~~~~~
 
-The first 10 rows of the dataset to get a overall view of the data.
+The first 10 rows of the data-set to get a overall view of the data.
 
 ```{r echo=FALSE}
 head(mtcars)
 ```
 
-## Apendix B - Detail Data Exploration
-
-**Boxplot MPG vs Tranmission Type**
-
-```{r fig.width=5, fig.height = 6}
-boxplot(mpg ~ am, data=mtcars, xlab="Transmission Type",
-ylab="Miles per Gallon",
-main="Automatic versus Manual Transmission MPG")
-```
-
 **T-Test**
+
+$H_0: \mu_a - \mu_m  = 0$
+
+$H_a: \mu_a - \mu_m  \neq 0$
+
+where:  
+  $\mu_a$ = average mpg of automatic  
+  $\mu_m$ = average mpg of manual  
+
+With with p-value of 0.0014 we reject $H_0$ in favour of $H_a$.
 
 ```{r}
 mpg.auto <- mtcars[mtcars$am == 0,]$mpg
@@ -72,26 +66,28 @@ t.test(mpg.auto, mpg.manual)
 ```
 
 
-## Appendix C - Data Model Selection
+## Data Model
+
+First we look at the correlation among all variables against *mpg* to see which should be included in our model. From the correlation matrix we that *cyl*, *disp*, *hp*, and *wt* are highly correlated with mpg. There is also a high correlation of `r cor(mtcars$disp, mtcars$cyl)` between *disp* and *cyl*, which means we may not want to include both. 
 
 **Correlation of Variables**
 
-Variables *cyl*, *disp*, *hp*, and *wt* are highly correlated with mgp. The high correlation between *disp* and *cyl* indicates that those two should be examined and determine if both should be included. 
+Variables *cyl*, *disp*, *hp*, and *wt* are highly correlated with **mpg**. The high correlation between *disp* and *cyl* indicates that those two should be examined and determine if both should be included. 
 
 ```{r}
 cor(mtcars)[1,]
-cor(mtcars$disp, mtcars$cyl)
+cor(mtcars$cyl,mtcars$disp)
 ```
 
 **The Models**
 
-Five nested models are created below. These are:
+Five nested models are created below, **am** being included in all. These are:
 
-Model 1: mpg ~ am
-Model 2: mpg ~ am + hp
-Model 3: mpg ~ am + hp + wt
-Model 4: mpg ~ am + hp + wt + cyl
-Model 5: mpg ~ am + hp + wt + disp
+Model 1: mpg ~ am  
+Model 2: mpg ~ am + hp  
+Model 3: mpg ~ am + hp + wt  
+Model 4: mpg ~ am + hp + wt + cyl  
+Model 5: mpg ~ am + hp + wt + disp  
 
 Models 4 and 5 are used to see if adding either *cyl* or *disp* is necessary. ANOVA test are done to compare the models and help make our model selection.
 
@@ -105,8 +101,16 @@ anova(model1, model2, model3, model4)
 anova(model1, model2, model3, model5)
 ```
 
-From both ANOVA test the p-values indicate that adding *hp* and *wt* is necessary. Both having p-values less than 0.05. However, both *cyl* and *disp* have high p-values (> 0.05) indicating that neither is necessary in the models. The final model then is model 3 inlcuding mpg *am*, *hp*, and *wt* predictors and *mpg* as outcome.
+From both ANOVA test the p-values indicate that adding *hp* and *wt* is necessary. Both having p-values less than 0.05. However, both *cyl* and *disp* have high p-values (> 0.05) indicating that neither is necessary in the models. The final model then is model 3 including mpg *am*, *hp*, and *wt* as predictors and *mpg* as outcome.
+
+Before looking at the summary of model3, we examine residuals to diagnose normality of the errors. In the Normal Q-Q plot below we see that the residuals fall roughly on the line indicating a fairly good model fit.
+
+```{r, fig.width=9, fig.height = 6 }
+plot(model3, which=2)
+```
 
 ```{r}
 summary(model3)
 ```
+
+This shows that on average the is a **2.084** mile per gallon increase for a manual transmission over an automatic. The $R^2$ value show the model explains **84%** of the variation. 
