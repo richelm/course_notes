@@ -62,6 +62,26 @@ testing = adData[-inTrain,]
 # linear discriminant analysis ("lda") model. Stack the predictions 
 # together using random forests ("rf"). What is the resulting accuracy 
 # on the test set? Is it better or worse than each of the individual predictions?
+set.seed(62433)
+# rf
+rf.mod <- train(diagnosis~.,method="rf",data=training)
+rf.predict <- predict(rf.mod, newdata=testing)
+confusionMatrix(data=rf.predict, testing$diagnosis)$overall['Accuracy']
+# gbm
+gbm.mod <- train(diagnosis~.,method="gbm",data=training)
+gbm.predict <- predict(gbm.mod, newdata=testing)
+confusionMatrix(data=gbm.predict, testing$diagnosis)$overall['Accuracy']
+
+# lda
+lda.mod <- train(diagnosis~.,method="lda",data=training)
+lda.predict <- predict(lda.mod, newdata=testing)
+confusionMatrix(data=lda.predict, testing$diagnosis)$overall['Accuracy']
+
+rf.predict <- predict(train(diagnosis~.,method="rf",data=training),newdata=testing)
+gbm.predict <- predict(train(diagnosis~.,method="gbm",data=training),newdata=testing)
+lda.predict <- predict(train(diagnosis~.,method="lda",data=training),newdata=testing)
+
+# RF: 0.7682927; GBM: 0.8170732; LDA: 0.7682927; Stacked: 
 
 # (N) A. Stacked Accuracy: 0.76 is better than random forests and boosting, but not lda.
 # B. Stacked Accuracy: 0.80 is better than random forests and lda and the same as boosting.
@@ -136,3 +156,4 @@ testing = concrete[-inTrain,]
 # (Y) B. 6.72 <<<
 # C. 107.44
 # D. 11543.39
+
