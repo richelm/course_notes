@@ -81,7 +81,12 @@ rf.predict <- predict(train(diagnosis~.,method="rf",data=training),newdata=testi
 gbm.predict <- predict(train(diagnosis~.,method="gbm",data=training),newdata=testing)
 lda.predict <- predict(train(diagnosis~.,method="lda",data=training),newdata=testing)
 
-# RF: 0.7682927; GBM: 0.8170732; LDA: 0.7682927; Stacked: 
+# stacked
+predDF <- data.frame(rf.predict,gbm.predict,lda.predict,testing$diagnosis)
+combModFit <- train(diagnosis~.,method="rf",data=predDF)
+combPred <- predict(combModFit,predDF)
+
+# RF: 0.7682927; GBM: 0.7926829; LDA: 0.7682927; Stacked: 
 
 # (N) A. Stacked Accuracy: 0.76 is better than random forests and boosting, but not lda.
 # B. Stacked Accuracy: 0.80 is better than random forests and lda and the same as boosting.
