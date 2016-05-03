@@ -82,16 +82,23 @@ gbm.predict <- predict(train(diagnosis~.,method="gbm",data=training),newdata=tes
 lda.predict <- predict(train(diagnosis~.,method="lda",data=training),newdata=testing)
 
 # stacked
-predDF <- data.frame(rf.predict,gbm.predict,lda.predict,testing$diagnosis)
+predDF <- data.frame(rf.predict,gbm.predict,lda.predict,diagnosis=testing$diagnosis)
 combModFit <- train(diagnosis~.,method="rf",data=predDF)
 combPred <- predict(combModFit,predDF)
+confusionMatrix(data=combPred, testing$diagnosis)$overall['Accuracy']
 
-# RF: 0.7682927; GBM: 0.7926829; LDA: 0.7682927; Stacked: 
+summary(rf.predict)
+summary(gbm.predict)
+summary(lda.predict)
+summary(testing$diagnosis)
+head(predDF)
+
+# RF: 0.7682927; GBM: 0.7926829; LDA: 0.7682927; Stacked: 0.804878 
 
 # (N) A. Stacked Accuracy: 0.76 is better than random forests and boosting, but not lda.
 # B. Stacked Accuracy: 0.80 is better than random forests and lda and the same as boosting.
 # C. Stacked Accuracy: 0.76 is better than lda but not random forests or boosting.
-# D. Stacked Accuracy: 0.80 is better than all three other methods
+# (X) D. Stacked Accuracy: 0.80 is better than all three other methods
 
 
 # -----------------------------------------------------------------------------
@@ -106,6 +113,11 @@ inTrain = createDataPartition(concrete$CompressiveStrength, p = 3/4)[[1]]
 training = concrete[ inTrain,]
 testing = concrete[-inTrain,]
 
+set.seed(233)
+mod <- train(CompressiveStrength~.,method="lasso",data=training)
+plot.enet(mod$finalModel, xvar="penalty", use.color=T)
+
+
 # Set the seed to 233 and fit a lasso model to predict Compressive 
 # Strength. Which variable is the last coefficient to be set to zero 
 # as the penalty increases? (Hint: it may be useful to look up ?plot.enet).
@@ -113,7 +125,7 @@ testing = concrete[-inTrain,]
 # A. BlastFurnaceSlag
 # (N) B. FineAggregate
 # C. CoarseAggregate
-# D. Cement
+# (X) D. Cement
 
 
 # -----------------------------------------------------------------------------
@@ -137,8 +149,13 @@ tstrain = ts(training$visitsTumblr)
 
 # A. 94%
 # B. 95%
-# C. 96%
+# (X) C. 96%
 # (N) D. 93%
+
+library(forecast)
+ts_mod <- bats(tstrain)
+fcast <- forecast(ts_mod, level = 95, h= dim(testing)[1] )
+accuracy(fcast,testing$visitsTumblr)
 
 
 # Question 5
@@ -148,6 +165,7 @@ tstrain = ts(training$visitsTumblr)
 rm(list=ls())
 set.seed(3523)
 library(AppliedPredictiveModeling)
+library(caret)
 data(concrete)
 inTrain = createDataPartition(concrete$CompressiveStrength, p = 3/4)[[1]]
 training = concrete[ inTrain,]
@@ -156,6 +174,13 @@ testing = concrete[-inTrain,]
 # Set the seed to 325 and fit a support vector machine using the e1071 
 # package to predict Compressive Strength using the default settings. 
 # Predict on the testing set. What is the RMSE?
+
+library(e1071)
+set.seed(325)
+modfit <- svm(CompressiveStrength~., data=training)
+pred <- predict(modfit, newdata = testing)
+accuracy(pred,testing$CompressiveStrength)
+
 
 # A. 6.93
 # (Y) B. 6.72 <<<
