@@ -67,6 +67,7 @@ set.seed(62433)
 rf.mod <- train(diagnosis~.,method="rf",data=training)
 rf.predict <- predict(rf.mod, newdata=testing)
 confusionMatrix(data=rf.predict, testing$diagnosis)$overall['Accuracy']
+
 # gbm
 gbm.mod <- train(diagnosis~.,method="gbm",data=training)
 gbm.predict <- predict(gbm.mod, newdata=testing)
@@ -93,12 +94,12 @@ summary(lda.predict)
 summary(testing$diagnosis)
 head(predDF)
 
-# RF: 0.7682927; GBM: 0.7926829; LDA: 0.7682927; Stacked: 0.804878 
+# RF: 0.7682927; GBM: 0.804878; LDA: 0.7682927; Stacked: 0.8292683 
 
 # (N) A. Stacked Accuracy: 0.76 is better than random forests and boosting, but not lda.
-# B. Stacked Accuracy: 0.80 is better than random forests and lda and the same as boosting.
+# (X) B. Stacked Accuracy: 0.80 is better than random forests and lda and the same as boosting.
 # C. Stacked Accuracy: 0.76 is better than lda but not random forests or boosting.
-# (X) D. Stacked Accuracy: 0.80 is better than all three other methods
+# D. Stacked Accuracy: 0.80 is better than all three other methods
 
 
 # -----------------------------------------------------------------------------
@@ -153,10 +154,14 @@ tstrain = ts(training$visitsTumblr)
 # (N) D. 93%
 
 library(forecast)
-ts_mod <- bats(tstrain)
-fcast <- forecast(ts_mod, level = 95, h= dim(testing)[1] )
-accuracy(fcast,testing$visitsTumblr)
+fit <- bats(tstrain)
 
+upper <- fitted(fit) + 1.96*sqrt(fit$variance)
+lower <- fitted(fit) - 1.96*sqrt(fit$variance)
+
+fcast <- forecast(ts_mod, h=dim(testing)[1], level=95, fan=FALSE, biasadj=FALSE)
+accuracy(fcast,testing$visitsTumblr)
+plot(fcast)
 
 # Question 5
 #
@@ -180,8 +185,8 @@ set.seed(325)
 modfit <- svm(CompressiveStrength~., data=training)
 pred <- predict(modfit, newdata = testing)
 accuracy(pred,testing$CompressiveStrength)
-
-
+pred$RMSE
+confusionMatrix(data=pred, testing$CompressiveStrength)$overall
 # A. 6.93
 # (Y) B. 6.72 <<<
 # C. 107.44
