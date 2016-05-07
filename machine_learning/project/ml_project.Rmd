@@ -51,5 +51,6 @@ testing <- trainingData[-inTrain,]
 ```{r}
 set.seed(6209)
 rfFit <- train(classe~., method="rf", data=training)
-confusionMatrix(testing$classe,predict(glmFit,newdata=testing))$overall['accuracy']
+rfFit <- randomForest(classe~., data = training)
+confusionMatrix(testing$classe,predict(rfFit,newdata=testing))$overall['accuracy']
 ```
