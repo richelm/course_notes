@@ -30,27 +30,26 @@ testingData <- read.table("./data/pml-testing.csv", sep=",", na.strings = c("NA"
 
 ## Cleanup Data
 
-The first two columns "X" and "user_name" are removed as they are irrelevant as predictors. The data contain many NA values. These are set to zero. Next the caret function nearZeroVar to identify near zero-variance variables that we would want to eliminate as predictors in our model.
+The first two columns "X" and "user_name" and timestamps variables are removed as they are irrelevant as predictors. The data contain many NA values. These are set to zero. Next the caret function nearZeroVar is used to identify near zero-variance variables that we would want to eliminate as predictors in our model.
 
 ```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
 trainingData <- trainingData[,-c(1,2)]
+trainingData <- trainingData[,-grep( "timestamp" , names(trainingData))]
 trainingData[is.na(trainingData)] <- 0
-
-dim(trainingData)
 nzv <- nearZeroVar(trainingData)
 trainingData <- trainingData[,-nzv]
-dim(trainingData)
 ```
-nzv[nzv$zeroVar,]
-head(trainingData)
-summary(training$X)
-head(training$X)
-tail(training$X)
-colnames(trainingData)
-colnames(testingData)
-summary(trainingData$classe)
-summary(testingData$problem_id)
-head(testingData$problem_id)
-head(pml_training[which(pml_training$new_window=="yes"),])
-summary(trainingData$user_name)
 
+Next the cleaned up training data is use to create training and testing data sets used for model building and verifying.
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
+inTrain <- createDataPartition(trainingData$classe, p=0.75, list=FALSE)
+training <- trainingData[inTrain,]
+testing <- trainingData[-inTrain,]
+```
+
+```{r}
+set.seed(6209)
+rfFit <- train(classe~., method="rf", data=training)
+confusionMatrix(testing$classe,predict(glmFit,newdata=testing))$overall['accuracy']
+```
