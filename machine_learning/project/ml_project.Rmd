@@ -18,7 +18,8 @@ setwd("~/Documents/courses/course_notes/machine_learning/project")
 
 # load libraries
 library(caret)
-
+library(gridExtra)
+library(randomForest)
 ```
 
 ## Load Train and Test Data
@@ -28,46 +29,70 @@ trainingData <- read.table("./data/pml-training.csv", sep=",", na.strings = c("N
 testingData <- read.table("./data/pml-testing.csv", sep=",", na.strings = c("NA","#DIV/0!"),header = TRUE)
 ```
 
-## Cleanup Data
+## Data Exploration
 
-The first two columns "X" and "user_name" and timestamps variables are removed as they are irrelevant as predictors. The data contain many NA values. These are set to zero. Next the caret function nearZeroVar is used to identify near zero-variance variables that we would want to eliminate as predictors in our model.
+With a view of the data many variables clearly had near zero variance. The caret function nearZeroVar quickly eliminated those. Others like "X", "user_name", and "timestamp" variables too were not necessary. What we ended up with was the accelerometer data. Key data from an accelerometer are roll (rotation around x-axis), pitch (rotaion around the y-axis), and yaw (rotation around the z-axis)[footnote 1]. These are calculated from the other accleerometer data, so we should see strong correlation among these. 
+
+Inital cleanup that leaves us with the accelerometer data.
 
 ```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
-#trainingData <- trainingData[,-grep( "timestamp|X|user_name|num_window" , names(trainingData))]
-trainingData <- trainingData[,grep( "classe|roll|pitch|yaw" , names(trainingData))]
-trainingData[is.na(trainingData)] <- 0
-nzv <- nearZeroVar(trainingData)
-trainingData <- trainingData[,-nzv]
-colnames(trainingData)
+exploreData <- trainingData[,-grep( "timestamp|X|user_name|num_window" , names(trainingData))]
+exploreData[is.na(exploreData)] <- 0
+nzv <- nearZeroVar(exploreData)
+exploreData <- exploreData[,-nzv]
 ```
 
-Next the cleaned up training data is use to create training and testing data sets used for model building and verifying.
+The table below shows the correlation among roll, pitch and yaw with the raw accleerometer data for the belt accleerometer. As we expected, there is strong correlation among roll, pitch and yaw with the raw accleerometer data. Correlation is seen similarly in the other accleerometers data.
+
+```{r}
+belt <- exploreData[,grep("belt",names(exploreData))]
+row1 <- c(round(cor(belt[,grep("roll_belt|accel_belt",names(belt))]),2)[1,-1])
+row2 <- c(round(cor(belt[,grep("pitch_belt|accel_belt",names(belt))]),2)[1,-1])
+row3 <- c(round(cor(belt[,grep("yaw_belt|accel_belt",names(belt))]),2)[1,-1])
+cm <- rbind(row1, row2, row3)
+rownames(cm) <- c("Roll","Pitch","Yaw")
+#grid.table(cm)
+cm
+```
+
+## Models
+
+From our data exploration findings we are left with roll, pitch and yaw data for each of the four accleerometers as our predictors. These data are split into training and testing for our model building.
 
 ```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
 set.seed(526)
+trainingData <- exploreData[,grep( "classe|roll|pitch|yaw" , names(exploreData))]
 inTrain <- createDataPartition(trainingData$classe, p=0.75, list=FALSE)
 training <- trainingData[inTrain,]
 testing <- trainingData[-inTrain,]
 ```
 
-```{r}
+### Random Forest
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
 rfFit <- randomForest(classe~., data = training)
-#rfFit <- train(classe~., method="rf", data = training)
 rfPredict <- predict(rfFit, newdata = testing)
 confusionMatrix(data=rfPredict, testing$classe)$overall['Accuracy']
-round(importance(rfFit),2)
 ```
 
-```{r}
-treeFit <- train(classe~., data = training, method = "rpart")
+### Decision Tree
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
+treeCtrl <- trainControl(method = "cv", number = 5, savePredictions = TRUE)
+treeFit <- train(classe~., data = training, method = "rpart", trControl=treeCtrl)
 treePredict <- predict(treeFit, newdata = testing)
 confusionMatrix(data=treePredict, testing$classe)$overall['Accuracy']
 ```
 
-```{r}
+### Boosting
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
 gbmCtrl <- trainControl(method = "cv", number = 5, savePredictions = TRUE)
 gbmFit <- train(classe~., data = training, method = "gbm", trControl=gbmCtrl)
 gbmPredict <- predict(gbmFit, newdata = testing)
 confusionMatrix(data=gbmPredict, testing$classe)$overall['Accuracy']
 ```
 
+## References
+
+[https://www.nxp.com/files/sensors/doc/app_note/AN3461.pdf](https://www.nxp.com/files/sensors/doc/app_note/AN3461.pdf)
