@@ -1,6 +1,6 @@
 ---
 title: "Machine Learning Project"
-author: "Shawn Rich"
+author: "S. Rich"
 date: "May 7, 2016"
 output: html_document
 ---
@@ -18,81 +18,97 @@ setwd("~/Documents/courses/course_notes/machine_learning/project")
 
 # load libraries
 library(caret)
-library(gridExtra)
 library(randomForest)
 ```
 
-## Load Train and Test Data
-
-```{r warning=FALSE, echo=FALSE, error=FALSE, message=FALSE}
-trainingData <- read.table("./data/pml-training.csv", sep=",", na.strings = c("NA","#DIV/0!"),header = TRUE)
-testingData <- read.table("./data/pml-testing.csv", sep=",", na.strings = c("NA","#DIV/0!"),header = TRUE)
-```
 
 ## Data Exploration
 
-With a view of the data many variables clearly had near zero variance. The caret function nearZeroVar quickly eliminated those. Others like "X", "user_name", and "timestamp" variables too were not necessary. What we ended up with was the accelerometer data. Key data from an accelerometer are roll (rotation around x-axis), pitch (rotaion around the y-axis), and yaw (rotation around the z-axis)[footnote 1]. These are calculated from the other accleerometer data, so we should see strong correlation among these. 
-
-Inital cleanup that leaves us with the accelerometer data.
+With a view of the data many variables clearly had near zero variance. The caret function nearZeroVar quickly eliminated those. Others like "X", "user_name", and "timestamp" variables too were not necessary. What we ended up with was the accelerometer data for each of the four accelerometers; belt, arm, dumbbell, and forearm.
 
 ```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
-exploreData <- trainingData[,-grep( "timestamp|X|user_name|num_window" , names(trainingData))]
-exploreData[is.na(exploreData)] <- 0
-nzv <- nearZeroVar(exploreData)
-exploreData <- exploreData[,-nzv]
-```
+# read data from file
+trainingData <- read.table("./data/pml-training.csv", sep=",", na.strings = c("NA","#DIV/0!"),header = TRUE)
+testingData <- read.table("./data/pml-testing.csv", sep=",", na.strings = c("NA","#DIV/0!"),header = TRUE)
 
-The table below shows the correlation among roll, pitch and yaw with the raw accleerometer data for the belt accleerometer. As we expected, there is strong correlation among roll, pitch and yaw with the raw accleerometer data. Correlation is seen similarly in the other accleerometers data.
-
-```{r}
-belt <- exploreData[,grep("belt",names(exploreData))]
-row1 <- c(round(cor(belt[,grep("roll_belt|accel_belt",names(belt))]),2)[1,-1])
-row2 <- c(round(cor(belt[,grep("pitch_belt|accel_belt",names(belt))]),2)[1,-1])
-row3 <- c(round(cor(belt[,grep("yaw_belt|accel_belt",names(belt))]),2)[1,-1])
-cm <- rbind(row1, row2, row3)
-rownames(cm) <- c("Roll","Pitch","Yaw")
-#grid.table(cm)
-cm
+# explore data
+trainingData <- trainingData[,-grep( "timestamp|X|user_name|num_window" , names(trainingData))]
+trainingData[is.na(trainingData)] <- 0
+nzv <- nearZeroVar(trainingData)
+trainingData <- trainingData[,-nzv]
 ```
 
 ## Models
 
-From our data exploration findings we are left with roll, pitch and yaw data for each of the four accleerometers as our predictors. These data are split into training and testing for our model building.
+All models use 52 accleerometer related variables as predictors. These data are split into training and testing for our model building and accuracy testing. Three models were generated and compared. These are Random Forest, CART, and Stochastic Gradient Boosting (Boosting).
 
 ```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
 set.seed(526)
-trainingData <- exploreData[,grep( "classe|roll|pitch|yaw" , names(exploreData))]
-inTrain <- createDataPartition(trainingData$classe, p=0.75, list=FALSE)
+inTrain <- createDataPartition(trainingData$classe, p=0.70, list=FALSE)
 training <- trainingData[inTrain,]
 testing <- trainingData[-inTrain,]
 ```
 
-### Random Forest
+### Random Forest 
+
+Cross validation is inherit in the random forest model because at each split it conciders only a subset of the predictors.
 
 ```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
 rfFit <- randomForest(classe~., data = training)
 rfPredict <- predict(rfFit, newdata = testing)
-confusionMatrix(data=rfPredict, testing$classe)$overall['Accuracy']
+rfAccuracy <- confusionMatrix(data=rfPredict, testing$classe)$overall['Accuracy']
+quizPredict <- predict(rfFit, newdata = testingData)
 ```
 
-### Decision Tree
+### CART
 
-```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
-treeCtrl <- trainControl(method = "cv", number = 5, savePredictions = TRUE)
-treeFit <- train(classe~., data = training, method = "rpart", trControl=treeCtrl)
-treePredict <- predict(treeFit, newdata = testing)
-confusionMatrix(data=treePredict, testing$classe)$overall['Accuracy']
+Both CART and Boosting models k-fold cross validation approach with 5 folds.
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE, comment=" "}
+cartCtrl <- trainControl(method = "cv", number = 5, savePredictions = TRUE)
+cartFit <- train(classe~., data = training, method = "rpart", trControl=cartCtrl)
+cartPredict <- predict(cartFit, newdata = testing)
+cartAccuracy <- confusionMatrix(data=cartPredict, testing$classe)$overall['Accuracy']
 ```
 
 ### Boosting
 
-```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE}
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE, comment=" "}
 gbmCtrl <- trainControl(method = "cv", number = 5, savePredictions = TRUE)
-gbmFit <- train(classe~., data = training, method = "gbm", trControl=gbmCtrl)
+gbmFit <- train(classe~., data = training, method = "gbm", trControl=gbmCtrl, verbose=FALSE)
 gbmPredict <- predict(gbmFit, newdata = testing)
-confusionMatrix(data=gbmPredict, testing$classe)$overall['Accuracy']
+gbmAccuracy <- confusionMatrix(data=gbmPredict, testing$classe)$overall['Accuracy']
 ```
 
-## References
 
-[https://www.nxp.com/files/sensors/doc/app_note/AN3461.pdf](https://www.nxp.com/files/sensors/doc/app_note/AN3461.pdf)
+### Model Summary
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE, comment=" "}
+msr1 <- c(100*round(rfAccuracy,3),100*(round((1 - rfAccuracy),3)))
+msr2 <- c(100*round(cartAccuracy,3),100*(round((1 - cartAccuracy),3)))
+msr3 <- c(100*round(gbmAccuracy,3),100*(round((1 - gbmAccuracy),3)))
+ms <- as.data.frame(rbind(msr1, msr2, msr3))
+rownames(ms) <- c("Random Forest","CART","Boosting")
+colnames(ms) <- c("Overall Accuracy %","Overall Error %")
+ms
+```
+
+
+Random Forest model gives the best overall accuracy and error. Before choosing this as our final model we look in more detail. To do this we plot error vs number of trees and view the model details.
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE, comment=" "}
+plot(rfFit,main="Random Forest Errors vs Number of Trees")
+```
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE, comment=" "}
+rfFit
+```
+
+### Predict with Test Data
+
+Based on the plot and details of the random forest model we use it to predict the quiz test data.
+
+```{r warning=FALSE, echo=TRUE, error=FALSE, message=FALSE, comment=" "}
+quizPredict <- predict(rfFit, newdata = testingData)
+```
+
