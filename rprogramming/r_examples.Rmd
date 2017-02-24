@@ -130,7 +130,7 @@ df$b <- df$b/2
 df
 ```
 
-## Find any row with an NA value in any column
+## Working with NA values
 
 ```{r}
 df <- data.frame(col1 = c(1, 2, 3, NA, 5), col2 = c('A', 'B', NA, 'C', 'D'),
@@ -138,6 +138,23 @@ df <- data.frame(col1 = c(1, 2, 3, NA, 5), col2 = c('A', 'B', NA, 'C', 'D'),
 df
 ```
 
+List rows in which any column (at least one column) has an NA
+
 ```{r}
 df[rowSums(is.na(df))>0,]
 ```
+
+Change "na" to NA; sometime data is marked as NA with character string "na"
+and we want really NA. Alos, the "na" turns columns into Factor variables
+
+```{r}
+df <- data.frame(col1 = c(1,2,"na",4), col2 = c(5,"na",7,8))
+```
+
+First, change "na" to NA
+
+```{r}
+df[is.na(df),]
+```
+
+The "na" also turns the colums to Factor variables, so we need to convert to integer
