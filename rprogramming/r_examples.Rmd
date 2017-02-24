@@ -1,6 +1,8 @@
 ---
 title: "R Examples"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ## Drop Columns from a Data Frame
@@ -126,4 +128,16 @@ Divide column by 2
 ```{r}
 df$b <- df$b/2
 df
+```
+
+## Find any row with an NA value in any column
+
+```{r}
+df <- data.frame(col1 = c(1, 2, 3, NA, 5), col2 = c('A', 'B', NA, 'C', 'D'),
+             col3 = c(9, NaN, 8, 7, 6))
+df
+```
+
+```{r}
+df[rowSums(is.na(df))>0,]
 ```

@@ -1,7 +1,7 @@
 ---
 output: pdf_document
 fontsize: 12pt
-geometry: margin=0.75in
+geometry: margin=0.50in
 ---
 
 
@@ -13,7 +13,7 @@ Let B = the probability that at least two people of the same birthday. Then:
 
 $$P(B) = 1 - \frac{365}{365} * \frac{364}{365} * \frac{363}{365} * \ldots \frac{365 - (n-1)}{365}$$
 
-In the above formula we calculate the probability that no one has the same birthday and subtract this from 1. This approach make the calculation easier. The **R** code below implements this formula in the *sapply* function.
+In the above formula we calculate the probability that no one has the same birthday and subtract this from 1. This approach makes the calculation easier. The **R** code below implements this formula in the *sapply* function.
 
 
 ```{r echo=FALSE}
@@ -22,12 +22,13 @@ library(ggplot2)
 
 ```{r fig.width=6, fig.height = 4}
 # calculate the probability of two people having same birthday
-dat <- data.frame(group_size = c(1:90))
+dat <- data.frame(group_size = c(2:90))
 dat$probability <- sapply(dat$group_size,function(x) 
   1 - prod(365:(365 - (x -1))) / 365^x)
 
 # plot the results
-ggplot(data=dat, aes(x = group_size, y=probability)) +
+ggplot(data=dat, aes(x= group_size, y=probability)) +
+  labs(x = "Group Size", y = "Probability") +
   geom_line(colour="black") +
   coord_cartesian(xlim = c(0,90)) + scale_x_continuous(breaks=seq(0,90,10))  +
   coord_cartesian(ylim = c(0.00,1.00)) + 
