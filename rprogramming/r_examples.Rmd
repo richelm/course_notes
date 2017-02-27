@@ -145,16 +145,59 @@ df[rowSums(is.na(df))>0,]
 ```
 
 Change "na" to NA; sometime data is marked as NA with character string "na"
-and we want really NA. Alos, the "na" turns columns into Factor variables
+and we want is NA. Also, the "na" turns columns into Factor variables
 
 ```{r}
-df <- data.frame(col1 = c(1,2,"na",4), col2 = c(5,"na",7,8))
+df <- data.frame(col1 = c(1,2,"na",4), col2= c(9,8,5,3), col3 = c(5,"na","na",8))
 ```
 
-First, change "na" to NA
+First, change "na" to NA and then convert Factor variables to integer
 
 ```{r}
-df[is.na(df),]
+# change "na" to NA
+df$col1[which(df$col1=="na")] <- NA
+df$col2[which(df$col2=="na")] <- NA
+df$col3[which(df$col3=="na")] <- NA
+
+df.cols <- c("col1","col2","col3")
+df[,df.cols] = apply(df[,df.cols], 2, function(x) as.integer(x))
+```
+
+Show rows with NA values and summary counts.
+
+```{r}
+# rows with NAs
+df[rowSums(is.na(df))>0,df.cols]
+
+# summary counts
+na_count <-sapply(df, function(x) sum(length(which(is.na(x)))))
+data.frame(na_count)
+```
+
+## Mode Calulation
+
+Example taken verbatim from here: [https://www.tutorialspoint.com/r/r_mean_median_mode.htm](https://www.tutorialspoint.com/r/r_mean_median_mode.htm)
+
+```{r}
+# Create the function.
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+# Create the vector with numbers.
+v <- c(2,1,2,3,1,2,3,4,1,5,5,3,2,3,1)
+
+# Calculate the mode using the user function.
+result <- getmode(v)
+print(result)
+
+# Create the vector with characters.
+charv <- c("o","it","the","it","it")
+
+# Calculate the mode using the user function.
+result <- getmode(charv)
+print(result)
 ```
 
 The "na" also turns the colums to Factor variables, so we need to convert to integer
